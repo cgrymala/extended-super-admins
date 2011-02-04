@@ -3,7 +3,7 @@ Contributors: cgrymala
 Tags: wpmu, multisite, super admins, role manager, capabilities, wpmn
 Requires at least: 3.0
 Tested up to: 3.1-RC3
-Stable tag: 0.1
+Stable tag: 0.2a
 
 This plugin allows you to create multiple levels of Super Admins in a multi-site configuration.
 
@@ -64,6 +64,9 @@ You can find descriptions of most of the capabilities in the WordPress codex. Un
 If the WPMN plugin is active, this plugin will attempt to use and save any and all of its settings across all of the networks. There is currently no way, with WPMN activated, to use different settings on individual networks.
 
 == Changelog ==
+
+= 0.2a =
+Corrected a version inconsistency between the readme file and the main plugin file. No substantial changes were made to the functionality of this plugin.
 
 = 0.1 =
 This is the first version.
