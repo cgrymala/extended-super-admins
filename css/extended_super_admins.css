@@ -1,0 +1,25 @@
+/* ESA 0.3a */
+.esa-options-table {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	border: 1px solid #666;
+	margin: 0 1% .25em;
+	width: 98%;
+}
+.esa-options-table thead {
+	background: #e2e2e2;
+}
+.esa-options-table h3 {
+	margin: 0;
+	padding: 0;
+}
+.esa-options-table div.checkbox-container {
+	width: 30%;
+	padding-right: 3%;
+	float: left;
+}
+#wpcontent .esa-options-table select.role-members-select {
+	height: 10em;
+	width: 20em;
+}
