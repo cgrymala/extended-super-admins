@@ -3,6 +3,7 @@
  * Handle Multi-Network actions for the Extended Super Admins Plugin
  * @package WordPress
  * @subpackage ExtendedSuperAdmins
+ * @since 0.1a
  */
 
 if( !isset( $_GET['options-action'] ) )

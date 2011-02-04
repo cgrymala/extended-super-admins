@@ -3,6 +3,8 @@
  * Includes the constants and defines the class for setting up multiple levels of super admins
  * @package WordPress
  * @subpackage ExtendedSuperAdmins
+ * @since 0.1a
+ * @version 0.3a
  */
 
 /**

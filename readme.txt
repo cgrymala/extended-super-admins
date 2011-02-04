@@ -3,7 +3,7 @@ Contributors: cgrymala
 Tags: wpmu, multisite, super admins, role manager, capabilities, wpmn
 Requires at least: 3.0
 Tested up to: 3.1-RC3
-Stable tag: 0.2a
+Stable tag: 0.3a
 
 This plugin allows you to create multiple levels of Super Admins in a multi-site configuration.
 
@@ -17,9 +17,15 @@ This plugin does not grant any new privileges (with the possible exception of th
 
 This plugin is also built to be compatible with the WordPress Multi Network plugin. If the WPMN plugin is active, the options for this plugin will be saved and used for all of the networks within the installation.
 
+This plugin was developed by [Curtiss Grymala](http://ten-321.com/) for the [University of Mary Washington](http://umw.edu/). It is licensed under the GPL2, which basically means you can take it, break it and change it any way you want, as long as the original credit and license information remains somewhere in the package.
+
 == Important Notice ==
 
 So far, this plugin has only been tested on a handful of WordPress installations; all my own. Therefore, it is entirely possible that there could be serious bugs when used in different settings. At this time, I am seeking people to test the plugin, so please report any issues you encounter. Thank you.
+
+Also, if you are updating from the original public alpha of this plugin, you will need to delete the old version before installing this version. The folder name changed from extended_super_admins in the initial release to extended-super-admins in newer versions.
+
+If you downloaded and installed this plugin from the WordPress repository, you will not need to do so, as the folder name changed when adding this plugin to that repository.
 
 == Requirements ==
 
@@ -63,7 +69,15 @@ You can find descriptions of most of the capabilities in the WordPress codex. Un
 
 If the WPMN plugin is active, this plugin will attempt to use and save any and all of its settings across all of the networks. There is currently no way, with WPMN activated, to use different settings on individual networks.
 
+== Upgrade Notice ==
+
+= 0.3a =
+The previous version was missing all subfolders. This is a necessary upgrade to get the plugin working properly.
+
 == Changelog ==
+
+= 0.3a =
+The "stable" copy of 0.2a was missing all subfolders. Corrected this issue.
 
 = 0.2a =
 Corrected a version inconsistency between the readme file and the main plugin file. No substantial changes were made to the functionality of this plugin.

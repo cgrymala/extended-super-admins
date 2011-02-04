@@ -3,6 +3,8 @@
  * Classes and methods for extended super admins in a multi-network setup
  * @package WordPress
  * @subpackage ExtendedSuperAdmins
+ * @since 0.1a
+ * @version 0.3a
  */
 
 if( !class_exists( 'extended_super_admins' ) )

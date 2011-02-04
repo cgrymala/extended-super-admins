@@ -3,6 +3,8 @@
  * This file defines all the necessary constants for the Extended Super Admins plugin
  * @package WordPress
  * @subpackage ExtendedSuperAdmins
+ * @since 0.1a
+ * @version 0.3a
  */
 
 if( !defined( 'ESA_OPTION_NAME' ) )
@@ -40,5 +42,11 @@ if( !defined( 'ESA_TEXT_DOMAIN' ) )
 	 * Define the plugin_text_domain to be used by this plugin
 	 */
 	 define( 'ESA_TEXT_DOMAIN', 'esa_text_domain' );
+
+if( !defined( 'ESA_VERSION' ) )
+	/**
+	 * Define the current version of this plugin
+	 */
+	define( 'ESA_VERSION', '0.3a' );
 
 ?>
