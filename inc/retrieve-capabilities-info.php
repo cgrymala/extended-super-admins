@@ -90,8 +90,29 @@ function findCap( $cap, $caps_descriptions=array(), $include_titles=false ) {
  * @return string the semi-parsed information
  */
 function parseWiki( $content ) {
-	return /*preg_replace( '/\[\[([^\]]+?)\|([^\]]+?)\]\]/', '<a href="http://codex.wordpress.org/$1" target="_codex_window">$2</a>',*/ wpautop( $content /*) */);
+	/* If it's already been parsed, or there is nothing to parse, we return the content */
+	if( empty($content) || ( stristr( $content, '<p>' ) && !strstr( $content, '[' ) && !strstr( $content, '\'\'\'' ) ) )
+		return $content;
 	
+	/* Parse the content in long-hand (meaning that each function call is on its own line */
+	$content = wpautop( $content );
+	$content = preg_replace( '/\[\[\#([^\]]+?)\|([^\]]+?)\]\]/', '<a href="http://codex.wordpress.org/Roles_and_Capabilities#$1">$2</a>', $content );
+	$content = preg_replace( '/\[\[([^\]]+?)\|([^\]]+?)\]\]/', '<a href="http://codex.wordpress.org/$1" target="_codex_window">$2</a>', $content );
+	$content = preg_replace( '/\[([^(\[|\s|\])]+?)\s([^(\[|\s|\])]+?)\]/', '<a href="$1">$2</a>', $content );
+	$content = preg_replace( '#\'\'\'([^\']+?)\'\'\'#', '<strong>$1</strong>', $content );
+	return $content;
+	
+	/* Parse the content using nested functions rather than one-at-a-time
+	   If we found, for some reason, that the code above was really slow, 
+	   we'd try it this way, instead; but I suspect this is actually slower.
+	   We normally would never get this far, unless we comment out the lines 
+	   above. */
+	return preg_replace( '#\'\'\'([^\']+?)\'\'\'#', '<strong>$1</strong>', preg_replace( '/\[([^(\[|\s|\])]+?)\s([^(\[|\s|\])]+?)\]/', '<a href="$1">$2</a>', preg_replace( '/\[\[([^\]]+?)\|([^\]]+?)\]\]/', '<a href="http://codex.wordpress.org/$1" target="_codex_window">$2</a>', preg_replace( '/\[\[\#([^\]]+?)\|([^\]]+?)\]\]/', '<a href="http://codex.wordpress.org/Roles_and_Capabilities#$1">$2</a>', wpautop( $content ) ) ) ) );
+	
+	/* Try using the Codex API to parse the content. Because this has to make an HTTP
+	   request every time, this is really just here for future reference. This code
+	   should never be used as-is, which is why we're returning the content before we
+	   get here. */
 	$capsInfo = new WP_Http;
 	$tmp = $capsInfo->request( 'http://codex.wordpress.org/api.php?action=parse&format=php&text=' . urlencode($content) );
 	if( $tmp['response']['code'] == 200 ) {

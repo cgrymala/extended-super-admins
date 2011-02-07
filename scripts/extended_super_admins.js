@@ -15,8 +15,8 @@ jQuery( function( $ ) {
 			function() {
 			  	var myID = $(this).attr('id'); 
 				myID = myID.replace('_hover_','_');
-				var $el = $('#' + myID );
-				$el.dialog({
+				cap_description_dialogs[myID] = $('#' + myID );
+				cap_description_dialogs[myID].dialog({
 					'title':$(this).prev('label').text(),
 					'position':'center',
 					autoOpen:false
@@ -27,8 +27,7 @@ jQuery( function( $ ) {
 			function() { 
 			  	var myID = $(this).attr('id'); 
 				myID = myID.replace('_hover_','_');
-				var $el = $('#' + myID );
-				$el.dialog('open');
+				cap_description_dialogs[myID].dialog('open');
 			}
 		);
 	if( !$.support.cssFloat ) {
