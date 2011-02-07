@@ -15,10 +15,17 @@
 }
 .esa-options-table div.checkbox-container {
 	width: 30%;
-	padding-right: 3%;
+	padding: .25em 2% .25em 1%;
 	float: left;
 }
 #wpcontent .esa-options-table select.role-members-select {
 	height: 10em;
 	width: 20em;
 }
+.esa-options-table div.checkbox-container:nth-of-type(6n+1), 
+.esa-options-table div.checkbox-container:nth-of-type(6n+2), 
+.esa-options-table div.checkbox-container:nth-of-type(6n+3),
+.esa-options-table div.checkbox-container.even-row {
+	background: #e2e2e2;
+}
+.esa-options-table div.checkbox-container div.caps_info { display: none; }

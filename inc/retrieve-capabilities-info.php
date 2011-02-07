@@ -58,13 +58,14 @@ function getCodexCapabilities() {
  * @since 0.4a
  * @param string $cap the name of the cap to look for
  * @param array $caps_descriptions an array containing the items that have already been located
+ * @param bool $include_titles whether or not to include the heading in the returned string
  * @uses parseWiki()
  * @uses getCodexCapabilities()
  * @return string the semi-parsed Wiki information from the Codex
  */
-function findCap( $cap, $caps_descriptions=array() ) {
+function findCap( $cap, $caps_descriptions=array(), $include_titles=false ) {
 	if( array_key_exists( $cap, $caps_descriptions ) )
-		return parseWiki( $caps_descriptions[$cap] );
+		return $caps_descriptions[$cap];
 	
 	$capsPage = getCodexCapabilities();
 	if( !strstr( $capsPage, '===' . $cap . '===' ) )
@@ -73,7 +74,7 @@ function findCap( $cap, $caps_descriptions=array() ) {
 	$startPos = strpos( $capsPage, '===' . $cap . '===' );
 	$endPos = strpos( $capsPage, '==', ( $startPos + strlen( '===' . $cap . '===' ) ) );
 	$capsInfo = substr( $capsPage, ( $startPos + strlen( '===' . $cap . '===' ) ), ( $endPos - ( $startPos + strlen( '===' . $cap . '===' ) ) ) );
-	return '<h3>' . $cap . '</h3>' . parseWiki( $capsInfo );
+	return '' . ( ( $include_titles ) ? '<h3>' . $cap . '</h3>' : '' ) . parseWiki( $capsInfo );
 }
 
 /**
@@ -89,7 +90,7 @@ function findCap( $cap, $caps_descriptions=array() ) {
  * @return string the semi-parsed information
  */
 function parseWiki( $content ) {
-	return preg_replace( '/\[\[(.+?)\|(.+?)\]\]/', '<a href="http://codex.wordpress.org/$1" target="_codex_window">$2</a>', wpautop( $content ) );
+	return /*preg_replace( '/\[\[([^\]]+?)\|([^\]]+?)\]\]/', '<a href="http://codex.wordpress.org/$1" target="_codex_window">$2</a>',*/ wpautop( $content /*) */);
 	
 	$capsInfo = new WP_Http;
 	$tmp = $capsInfo->request( 'http://codex.wordpress.org/api.php?action=parse&format=php&text=' . urlencode($content) );
