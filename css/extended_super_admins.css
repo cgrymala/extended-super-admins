@@ -27,7 +27,9 @@
 }
 .esa-options-table div.checkbox-container:nth-of-type(6n+1), 
 .esa-options-table div.checkbox-container:nth-of-type(6n+2), 
-.esa-options-table div.checkbox-container:nth-of-type(6n+3),
+.esa-options-table div.checkbox-container:nth-of-type(6n+3) {
+	background: #e2e2e2;
+}
 .esa-options-table div.checkbox-container.even-row {
 	background: #e2e2e2;
 }

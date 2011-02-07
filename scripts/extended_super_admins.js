@@ -32,5 +32,7 @@ jQuery( function( $ ) {
 		);
 	if( !$.support.cssFloat ) {
 		$('.esa-options-table div.checkbox-container:nth-child(6n+1), .esa-options-table div.checkbox-container:nth-child(6n+2), .esa-options-table div.checkbox-container:nth-child(6n+3)').addClass('even-row');
+		$('.esa-options-table div.checkbox-container:nth-child(3n+1)').css({'clear':'left'});
+		$('.esa-options-table div.checkbox-container:nth-child(3n+3)').css({'clear':'right'});
 	}
 } );
