@@ -61,7 +61,9 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		 * @var array
 		 * @since 0.4a
 		 */
-		var $caps_descriptions = array();
+		var $caps_descriptions = array(
+			'manage_esa_options' => '<p>Capability specific to the Extended Super Admins plugin. Allows user to manage the options for the Extended Super Admins plugin.</p>',
+		);
 		
 		/**
 		 * Create our extended_super_admins object
@@ -325,6 +327,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				$output .= $this->debug;
 				unset( $this->debug );
 			}
+			$output .= '<p><em>' . __( 'In the lists of capabilities below, wherever (?) appears, you can click on that to view information from the WordPress Codex about that specific capability. The information is retrieved from the Codex once a week.', ESA_TEXT_DOMAIN ) . '</em></p><p><em>' . __( 'Don\'t like the description? Login to the WordPress Codex and edit it.', ESA_TEXT_DOMAIN ) . '</em></p>';
 			$output .= '
 		<form method="post" action="">';
 			$output .= wp_nonce_field( 'esa_options_save', '_wp_nonce', true, false );
