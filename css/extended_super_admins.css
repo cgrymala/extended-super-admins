@@ -25,6 +25,12 @@
 	height: 10em;
 	width: 20em;
 }
+.esa-options-table div.checkbox-container:nth-of-type(3n+1) {
+	clear: left;
+}
+.esa-options-table div.checkbox-container:nth-of-type(3n+3) {
+	clear: right;
+}
 .esa-options-table div.checkbox-container:nth-of-type(6n+1), 
 .esa-options-table div.checkbox-container:nth-of-type(6n+2), 
 .esa-options-table div.checkbox-container:nth-of-type(6n+3) {
