@@ -4,7 +4,7 @@
  * @package WordPress
  * @subpackage ExtendedSuperAdmins
  * @since 0.1a
- * @version 0.3a
+ * @version 0.4a
  */
 
 /**
@@ -23,32 +23,45 @@ if( !class_exists( 'extended_super_admins' ) ) {
 	class extended_super_admins {
 		/**
 		 * An array of identifiers for the different roles
+		 * @var array
 		 */
 		var $role_id = array();
 		/**
 		 * An array of the friendly names for these roles
+		 * @var array
 		 */
 		var $role_name = array();
 		/**
 		 * An array of the capabilities to be removed from each role
+		 * @var array
 		 */
 		var $role_caps = array();
 		/**
 		 * An array of the user logins that belong to each role
+		 * @var array
 		 */
 		var $role_members = array();
 		/**
 		 * An internal array of the options as sent to/retrieved from the database
+		 * @var array
 		 */
 		var $options = array();
 		/**
 		 * An internal array of the capabilities available
+		 * @var array
 		 */
 		var $allcaps = array();
 		/**
 		 * A variable to determine whether we've checked this user's permissions yet
+		 * @var bool
 		 */
 		var $perms_checked = false;
+		/**
+		 * An array to hold the Codex descriptions of each capability
+		 * @var array
+		 * @since 0.4a
+		 */
+		var $caps_descriptions = array();
 		
 		/**
 		 * Create our extended_super_admins object
@@ -79,10 +92,12 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				if( function_exists( 'register_setting' ) )
 					register_setting( ESA_OPTION_NAME, ESA_OPTION_NAME, array( $this, 'verify_options' ) );
 				if( function_exists( 'wp_enqueue_script' ) )
-					wp_enqueue_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.js', __FILE__ ), array('jquery'), '0.1', true );
+					wp_enqueue_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.js', __FILE__ ), array('jquery','jquery-ui-dialog'), '0.1', true );
 				
-				if( function_exists( 'wp_enqueue_style' ) )
-					wp_enqueue_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.css', __FILE__ ), array(), '0.1' );
+				if( function_exists( 'wp_enqueue_style' ) ) {
+					wp_register_style( 'jquery-ui-dialog', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/smoothness/jquery-ui.css', array(), '1.8.9', 'all' );
+					wp_enqueue_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.css', __FILE__ ), array('jquery-ui-dialog'), '0.1', 'all' );
+				}
 			}
 		}
 		
@@ -406,6 +421,19 @@ if( !class_exists( 'extended_super_admins' ) ) {
 								<input type="checkbox" name="role_caps[' . $id . '][' . $cap . ']" id="role_caps_' . $id . '_' . $cap . '" value="on"' . checked( $this->role_caps[$id][$cap], 'on', false ) . '/>';
 				$output .= '
 								<label for="role_caps_' . $id . '_' . $cap . '">' . $cap . '</label>';
+				if( !function_exists( 'findCap' ) )
+					require_once( 'inc/retrieve-capabilities-info.php' );
+				
+				if( $caps_info = findCap( $cap, $this->caps_descriptions ) ) {
+					$output .= '
+								<div class="caps_info">';
+					$this->caps_descriptions[$cap] = $caps_info;
+					$output .= $this->caps_descriptions[$cap];
+					$output .= '
+								</div>';
+				} else {
+					$this->caps_descriptions[$cap] = false;
+				}
 				$output .= '
 							</div>';
 			}

@@ -71,12 +71,23 @@ If the WPMN plugin is active, this plugin will attempt to use and save any and a
 
 == Upgrade Notice ==
 
+
+
 = 0.3a =
+
 The previous version was missing all subfolders. This is a necessary upgrade to get the plugin working properly.
+
+
 
 == Changelog ==
 
+
+
+= 0.4a =
+* Plugin now retrieves information about each capability (where available) from the WordPress Codex
+
 = 0.3a =
+
 The "stable" copy of 0.2a was missing all subfolders. Corrected this issue.
 
 = 0.2a =

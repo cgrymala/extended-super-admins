@@ -4,7 +4,7 @@
  * @package WordPress
  * @subpackage ExtendedSuperAdmins
  * @since 0.1a
- * @version 0.3a
+ * @version 0.4a
  */
 
 if( !class_exists( 'extended_super_admins' ) )
