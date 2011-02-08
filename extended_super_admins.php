@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 function instantiate_extended_super_admins() {
 	if( !is_multisite() )
 		return;
-	if( function_exists( 'wpmn_switch_to_network' ) ) {
+	if( function_exists( 'wpmn_switch_to_network' ) || function_exists( 'switch_to_site' ) ) {
 		require_once( 'class-wpmn_super_admins.php' );
 		return new wpmn_super_admins;
 	} else {

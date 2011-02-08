@@ -15,7 +15,8 @@ This plugin allows you to revoke specific privileges from any Super Admin on the
 
 This plugin does not grant any new privileges (with the possible exception of the ability to manage the settings for this plugin itself) to any users. It is only capable of removing privileges.
 
-This plugin is also built to be compatible with the WordPress Multi Network plugin. If the WPMN plugin is active, the options for this plugin will be saved and used for all of the networks within the installation.
+This plugin is also built to be compatible with the [WordPress Multi Network](http://wordpress.org/extend/plugins/wp-multi-network/) plugin and the [Networks for WordPress](http://wordpress.org/extend/plugins/networks-for-wordpress/) plugin. If either of those plugins is active, the options for this plugin will be saved and used for all of the networks within the installation.
+
 
 This plugin was developed by [Curtiss Grymala](http://ten-321.com/) for the [University of Mary Washington](http://umw.edu/). It is licensed under the GPL2, which basically means you can take it, break it and change it any way you want, as long as the original credit and license information remains somewhere in the package.
 
@@ -23,17 +24,21 @@ This plugin was developed by [Curtiss Grymala](http://ten-321.com/) for the [Uni
 
 So far, this plugin has only been tested on a handful of WordPress installations; all my own. Therefore, it is entirely possible that there could be serious bugs when used in different settings. At this time, I am seeking people to test the plugin, so please report any issues you encounter. Thank you.
 
+
+
 Also, if you are updating from the original public alpha of this plugin, you will need to delete the old version before installing this version. The folder name changed from extended_super_admins in the initial release to extended-super-admins in newer versions.
+
+
 
 If you downloaded and installed this plugin from the WordPress repository, you will not need to do so, as the folder name changed when adding this plugin to that repository.
 
 == Requirements ==
 
-This plugin requires WordPress. It might work with WordPressMU versions older than 3.0, but it has not been tested with those.
+* This plugin requires WordPress. It might work with WordPressMU versions older than 3.0, but it has not been tested with those.
 
-This plugin requires WordPress to be setup in Multi Site mode. It will not do anything at all if the Multi Site functions are not enabled.
+* This plugin requires WordPress to be setup in Multi Site mode. It will not do anything at all if the Multi Site functions are not enabled.
 
-This plugin also requires PHP5. Some attempt has been made to make it compatible with PHP4, but it has not been tested in that environment.
+* This plugin also requires PHP5. Some attempt has been made to make it compatible with PHP4, but it has not been tested in that environment.
 
 == Installation ==
 
@@ -65,9 +70,9 @@ At this time, you can assign a user to multiple roles, but only the first role i
 
 You can find descriptions of most of the capabilities in the WordPress codex. Unfortunately, there is no definitive explanation for each and every capability, so you may have to do some testing and play around with things a bit to get things working exactly the way you want.
 
-= How does this plugin integrate with the WordPress Multi Network plugin from John James Jacoby? =
+= How does this plugin integrate with the WordPress Multi Network plugin from John James Jacoby or the Networks for WordPress plugin from David Dean? =
 
-If the WPMN plugin is active, this plugin will attempt to use and save any and all of its settings across all of the networks. There is currently no way, with WPMN activated, to use different settings on individual networks.
+If either of those plugins is active, this plugin will attempt to use and save any and all of its settings across all of the networks. There is currently no way, with WPMN or Networks for WordPress activated, to use different settings on individual networks.
 
 == Upgrade Notice ==
 
@@ -85,6 +90,7 @@ The previous version was missing all subfolders. This is a necessary upgrade to 
 
 = 0.4a =
 * Plugin now retrieves information about each capability (where available) from the WordPress Codex
+* In addition to John James Jacoby's [WP Multi Network](http://wordpress.org/extend/plugins/wp-multi-network/) plugin, this plugin should now be compatible with David Dean's [Networks for WordPress](http://wordpress.org/extend/plugins/networks-for-wordpress/) plugin.
 
 = 0.3a =
 

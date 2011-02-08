@@ -97,10 +97,10 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 //			/* Get lists of all super admins for each network */
 //			if( count( $networks ) ) {
 //				foreach( $networks as $network ) {
-//					/*wpmn_switch_to_network( $network->id );*/
+//					/*$this->switch_to_site( $network->id );*/
 //					$network_admins[$i] = maybe_unserialize( $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM " . $wpdb->sitemeta . " WHERE site_id = " . $network->id . " AND meta_key = 'site_admins'" ) ) );
 //					$all_super_admins = array_merge( $all_super_admins, $network_admins[$i] );
-//					/*wpmn_restore_current_network();*/
+//					/*$this->restore_current_site();*/
 //					$i++;
 //				}
 //			}
@@ -166,11 +166,11 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			$networks = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT id FROM " . $wpdb->site ) );
 			$updated = true;
 			foreach( $networks as $network ) {
-				wpmn_switch_to_network( $network->id );
+				$this->switch_to_site( $network->id );
 				$upd = update_site_option( ESA_OPTION_NAME, $values_to_use );
 				if( !$upd )
 					$updated = false;
-				wpmn_restore_current_network();
+				$this->restore_current_site();
 			}
 			
 			if( $updated ) {
@@ -197,6 +197,23 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			unset( $this->options );
 			$this->set_options();
 			return $this->options;
+		}
+		
+		function switch_to_site( $site_id ) {
+			if( function_exists( 'wpmn_switch_to_network' ) )
+				return wpmn_switch_to_network( $site_id );
+			elseif( function_exists( 'switch_to_site' ) )
+				return switch_to_site( $site_id );
+			else
+				return false;
+		}
+		function restore_current_site() {
+			if( function_exists( 'wpmn_restore_current_network' ) )
+				return wpmn_restore_current_network();
+			elseif( function_exists( 'restore_current_site' ) )
+				return restore_current_site();
+			else
+				return false;
 		}
 		
 	}

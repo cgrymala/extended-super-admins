@@ -29,7 +29,7 @@ if( $_GET['options-action'] == 'multi_network_activate' ) {
 	if( count( $networks ) ) {
 		foreach( $networks as $network ) {
 			$opts_updated = false;
-			wpmn_switch_to_network( $network->id );
+			$wpmn_super_admins_obj->switch_to_site( $network->id );
 			if( current_user_can( 'manage_esa_options' ) ) {
 				$asp = maybe_unserialize( get_site_option( 'active_sitewide_plugins' ) );
 				if( !array_key_exists( ESA_PLUGIN_BASENAME, $asp ) ) {
@@ -56,7 +56,7 @@ if( $_GET['options-action'] == 'multi_network_activate' ) {
 			} else {
 				echo '<p>' . __( 'You do not have the appropriate permissions to network activate this plug-in on the network with an ID of ', ESA_TEXT_DOMAIN ) . $network->id . '</p>';
 			}
-			wpmn_restore_current_network();
+			$wpmn_super_admins_obj->restore_current_site();
 		}
 		echo '</div>';
 	} else {
@@ -72,7 +72,7 @@ if( $_GET['options-action'] == 'multi_network_activate' ) {
 	$networks = $wpdb->get_results( $wpdb->prepare( 'SELECT DISTINCT id FROM ' . $wpdb->site ) );
 	if( count( $networks ) ) {
 		foreach( $networks as $network ) {
-			wpmn_switch_to_network( $network->id );
+			$wpmn_super_admins_obj->switch_to_site( $network->id );
 			if( current_user_can( 'manage_esa_options' ) ) {
 				$asp = maybe_unserialize( get_site_option( 'active_sitewide_plugins' ) );
 				if( array_key_exists( ESA_PLUGIN_BASENAME, $asp ) ) {
@@ -88,7 +88,7 @@ if( $_GET['options-action'] == 'multi_network_activate' ) {
 			} else {
 				echo '<p>' . __( 'You do not have the appropriate permissions to network deactivate this plug-in on the network with an ID of ', ESA_TEXT_DOMAIN ) . $network->id . '</p>';
 			}
-			wpmn_restore_current_network();
+			$wpmn_super_admins_obj->restore_current_site();
 		}
 		echo '</div>';
 	} else {

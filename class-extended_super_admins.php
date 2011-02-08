@@ -179,11 +179,11 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			if( isset( $this->is_multi_network ) )
 				return $this->is_multi_network;
 			
-			if( function_exists( 'wpmn_switch_to_network' ) ) {
+			if( function_exists( 'wpmn_switch_to_network' ) || function_exists( 'switch_to_site' ) )
 				$this->is_multi_network = true;
-			} else {
+			else
 				$this->is_multi_network = false;
-			}
+			
 			return $this->is_multi_network;
 		}
 		
