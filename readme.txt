@@ -18,6 +18,7 @@ This plugin does not grant any new privileges (with the possible exception of th
 This plugin is also built to be compatible with the [WordPress Multi Network](http://wordpress.org/extend/plugins/wp-multi-network/) plugin and the [Networks for WordPress](http://wordpress.org/extend/plugins/networks-for-wordpress/) plugin. If either of those plugins is active, the options for this plugin will be saved and used for all of the networks within the installation.
 
 
+
 This plugin was developed by [Curtiss Grymala](http://ten-321.com/) for the [University of Mary Washington](http://umw.edu/). It is licensed under the GPL2, which basically means you can take it, break it and change it any way you want, as long as the original credit and license information remains somewhere in the package.
 
 == Important Notice ==
