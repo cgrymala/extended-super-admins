@@ -200,12 +200,17 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 		}
 		
 		function switch_to_site( $site_id ) {
-			if( function_exists( 'wpmn_switch_to_network' ) )
+			if( function_exists( 'wpmn_switch_to_network' ) ) {
 				return wpmn_switch_to_network( $site_id );
-			elseif( function_exists( 'switch_to_site' ) )
+			} elseif( function_exists( 'switch_to_site' ) ) {
+				if( empty( $GLOBALS['sites'] ) ) {
+					global $wpdb;
+					$GLOBALS['sites'] = $wpdb->get_results('SELECT * FROM ' . $wpdb->site);
+				}
 				return switch_to_site( $site_id );
-			else
+			} else {
 				return false;
+			}
 		}
 		function restore_current_site() {
 			if( function_exists( 'wpmn_restore_current_network' ) )
