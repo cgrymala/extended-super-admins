@@ -91,6 +91,7 @@ If either of those plugins is active, this plugin will attempt to use and save a
 * Fixed bugs that caused roles not to be deleted properly
 * Made minor UI changes to make it more obvious how roles are added and modified
 * Added a notice warning users when a role is added without a name
+* Special thanks to [RavanH](http://profiles.wordpress.org/users/RavanH/) for his help testing and debugging this version
 
 = 0.3a =
 
