@@ -31,12 +31,53 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 function instantiate_extended_super_admins() {
 	if( !is_multisite() )
 		return;
-	if( function_exists( 'wpmn_switch_to_network' ) || function_exists( 'switch_to_site' ) ) {
+	if( is_multinetwork() ) {
 		require_once( 'class-wpmn_super_admins.php' );
-		return new wpmn_super_admins;
+		$wpsa = new wpmn_super_admins;
+		$wpsa->is_multi_network = true;
+		return $wpsa;
 	} else {
 		require_once( 'class-extended_super_admins.php' );
-		return new extended_super_admins;
+		$wpsa = new extended_super_admins;
+		$wpsa->is_multi_network = false;
+		return $wpsa;
+	}
+}
+if( !function_exists( 'is_multinetwork' ) ) {
+	function is_multinetwork() {
+		if( function_exists( 'wpmn_switch_to_network' ) || function_exists( 'switch_to_site' ) )
+			return true;
+			
+		if( !file_exists( WP_PLUGIN_DIR . '/wordpress-multi-network/wordpress-multi-network.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/wordpress-multi-network.php' ) && !file_exists( WP_PLUGIN_DIR . '/networks-for-wordpress/index.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/networks-for-wordpress.php' ) )
+			return false;
+		
+		global $wpdb;
+		$plugins = $wpdb->get_results( $wpdb->prepare( "SELECT meta_value FROM " . $wpdb->sitemeta . " WHERE meta_key = 'active_sitewide_plugins'" ) );
+		foreach( $plugins as $plugin ) {
+			if( array_key_exists( 'wordpress-multi-network/wordpress-multi-network.php', maybe_unserialize( $plugin->meta_value ) ) ) {
+				require_once( WP_PLUGIN_DIR . '/wordpress-multi-network/wordpress-multi-network.php' );
+				return true;
+			} elseif( array_key_exists( 'networks-for-wordpress/index.php', maybe_unserialize( $plugin->meta_value ) ) ) {
+				require_once( WP_PLUGIN_DIR . '/networks-for-wordpress/index.php' );
+				return true;
+			}
+		}
+		$sites = $wpdb->get_results( $wpdb->prepare( "SELECT blog_id FROM " . $wpdb->blogs ) );
+		foreach( $sites as $site ) {
+			$oldblog = $wpdb->set_blog_id( $site->blog_id );
+			$plugins = $wpdb->get_results( $wpdb->prepare( "SELECT option_value FROM " . $wpdb->options . " WHERE option_name = 'active_plugins'" ) );
+			foreach( $plugins as $plugin ) {
+				if( array_key_exists( 'wordpress-multi-network/wordpress-multi-network.php', maybe_unserialize( $plugin->option_value ) ) ) {
+					require_once( WP_PLUGIN_DIR . '/wordpress-multi-network/wordpress-multi-network.php' );
+					return true;
+				} elseif( array_key_exists( 'networks-for-wordpress/index.php', maybe_unserialize( $plugin->option_value ) ) ) {
+					require_once( WP_PLUGIN_DIR . '/networks-for-wordpress/index.php' );
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 }
 add_action( 'plugins_loaded', 'instantiate_extended_super_admins' );

@@ -1,8 +1,10 @@
 jQuery( function( $ ) {
 	var cap_description_dialogs = {};
 	
-	$('.esa-options-table:not(:last) tbody').hide();
-	$('.esa-options-table thead h3').css({'cursor':'pointer'}).click( function() { $(this).closest('.esa-options-table').find('tbody').toggle() });
+	$('.esa-options-table' /*+ ':not(:last)'*/ + ' tbody').hide();
+	$('.esa-options-table thead h3').attr('title','Click to collapse or expand the options for this role').append( ' <span class="collapse-expand">[+]</span>' );
+	/*$('.esa-options-table:last thead h3 span.collapse-expand').html('[-]');*/
+	$('.esa-options-table thead h3').css({'cursor':'pointer'}).click( function() { $(this).closest('.esa-options-table').find('tbody').toggle(0,toggleOptions) });
 	$('.esa-options-table div.caps_info').each( 
 		function() { 
 			$(this).attr('id','caps_info_' + $(this).prev('label').attr('for') )
@@ -34,5 +36,11 @@ jQuery( function( $ ) {
 		$('.esa-options-table div.checkbox-container:nth-child(6n+1), .esa-options-table div.checkbox-container:nth-child(6n+2), .esa-options-table div.checkbox-container:nth-child(6n+3)').addClass('even-row');
 		$('.esa-options-table div.checkbox-container:nth-child(3n+1)').css({'clear':'left'});
 		$('.esa-options-table div.checkbox-container:nth-child(3n+3)').css({'clear':'right'});
+	}
+	function toggleOptions() {
+		/*$(this).toggle();*/
+		var $collapseExpand = $(this).closest('.esa-options-table').find('h3 span.collapse-expand');
+		var collapseExpandIcon = $collapseExpand.html();
+		$collapseExpand.html( (collapseExpandIcon == '[-]') ? '[+]' : '[-]' );
 	}
 } );

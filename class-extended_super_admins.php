@@ -110,7 +110,12 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			$settings_link .= __( 'Settings', ESA_TEXT_DOMAIN );
 			$settings_link .= '</a>';
 			
+			$del_settings_link = '<a href="' . $options_page . '.php?page=' . ESA_OPTIONS_PAGE . '&options-action=remove_settings">';
+			$del_settings_link .= __( 'Delete Settings', ESA_TEXT_DOMAIN );
+			$del_settings_link .= '</a>';
+			
 			array_unshift( $links, $settings_link );
+			array_push( $links, $del_settings_link );
 			return $links;
 		}
 		
@@ -149,6 +154,10 @@ if( !class_exists( 'extended_super_admins' ) ) {
 					if( ( empty( $this->options['role_name'][$id] ) && empty( $this->options['role_members'][$id] ) && empty( $this->options['role_caps'][$id] ) ) || ( isset($values_to_use['delete_role'][$id] ) && $values_to_use['delete_role'][$id] == 'on' ) ) {
 						unset( $this->options['role_id'][$id], $this->options['role_name'][$id], $this->options['role_members'][$id], $this->options['role_caps'][$id] );
 					}
+					if( empty( $this->options['role_name'][$id] ) ) {
+						unset( $this->options['role_id'][$id], $this->options['role_name'][$id], $this->options['role_members'][$id], $this->options['role_caps'][$id] );
+						$this->debug .= '<div class="error">' . __( 'One of the roles you attempted to create did not have a name. Therefore it was not saved. Please try again.', ESA_TEXT_DOMAIN ) . '</div>';
+					}
 				}
 			}
 			
@@ -179,11 +188,37 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			if( isset( $this->is_multi_network ) )
 				return $this->is_multi_network;
 			
-			if( function_exists( 'wpmn_switch_to_network' ) || function_exists( 'switch_to_site' ) )
+			if( function_exists( 'wpmn_switch_to_network' ) || function_exists( 'switch_to_site' ) ) {
 				$this->is_multi_network = true;
-			else
+				return $this->is_multi_network;
+			}
+				
+			if( !file_exists( WP_PLUGIN_DIR . '/wordpress-multi-network/wordpress-multi-network.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/wordpress-multi-network/wordpress-multi-network.php' ) && !file_exists( WP_PLUGIN_DIR . '/networks-for-wordpress/index.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/networks-for-wordpress/index.php' ) ) {
 				$this->is_multi_network = false;
+				return $this->is_multi_network;
+			}
 			
+			global $wpdb;
+			$plugins = $wpdb->get_results( $wpdb->prepare( "SELECT meta_value FROM " . $wpdb->sitemeta . " WHERE meta_key = 'active_sitewide_plugins'" ) );
+			foreach( $plugins as $plugin ) {
+				if( in_array( 'wordpress-multi-network/wordpress-multi-network.php', maybe_unserialize( $plugin->meta_value ) ) || in_array( 'networks-for-wordpress/index.php', maybe_unserialize( $plugin->meta_value ) ) ) {
+					$this->is_multi_network = true;
+					return $this->is_multi_network;
+				}
+			}
+			$sites = $wpdb->get_results( $wpdb->prepare( "SELECT blog_id FROM " . $wpdb->blogs ) );
+			foreach( $sites as $site ) {
+				$oldblog = $wpdb->set_blog_id( $site->blog_id );
+				$plugins = $wpdb->get_results( $wpdb->prepare( "SELECT option_value FROM " . $wpdb->options . " WHERE option_name = 'active_plugins'" ) );
+				foreach( $plugins as $plugin ) {
+					if( in_array( 'wordpress-multi-network/wordpress-multi-network.php', maybe_unserialize( $plugin->option_value ) ) || in_array( 'networks-for-wordpress/index.php', maybe_unserialize( $plugin->option_value ) ) ) {
+						$this->is_multi_network = true;
+						return $this->is_multi_network;
+					}
+				}
+			}
+			
+			$this->is_multi_network = false;
 			return $this->is_multi_network;
 		}
 		
@@ -260,6 +295,14 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		}
 		
 		/**
+		 * Remove this plugin's settings from the database
+		 */
+		function delete_settings() {
+			delete_site_option( ESA_OPTION_NAME );
+			return print('<div class="warning">The settings for this plugin have been deleted.</div>');
+		}
+		
+		/**
 		 * Perform the action of revoking specific privileges from the current user
 		 */
 		function revoke_privileges( $caps, $cap, $user_id, $args ) {
@@ -307,6 +350,8 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				if( stristr( $_REQUEST['options-action'], 'multi_network_' ) ) {
 					require_once( ESA_ABS_DIR . '/inc/multi_network_activation.php' );
 					return;
+				} elseif( $_REQUEST['options-action'] == 'remove_settings' ) {
+					return $this->delete_settings();
 				}
 			}
 			/* We need to save our options if the form was already submitted */
@@ -338,7 +383,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			$output .= $this->admin_options_section();
 			$output .= '
 			<p class="submit">
-	        	<input type="submit" class="button-primary" value="' . __('Save and Add Another', ESA_TEXT_DOMAIN) . '"/>
+	        	<input type="submit" class="button-primary" value="' . __('Save', ESA_TEXT_DOMAIN) . '"/>
 			</p>
 			<input type="hidden" name="esa_options_action" value="save"/>
 		</form>';
@@ -370,7 +415,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				<thead>
 					<tr>
 						<th' . ( ( $new ) ? ' colspan="2"' : '' ) . '>
-							<h3>' . ( ( $new ) ? 'New Role' : $this->role_name[$id] ) . '</h3>
+							<h3>' . ( ( $new ) ? 'Add a New Role' : $this->role_name[$id] ) . '</h3>
 							<input type="hidden" name="role_id[' . $id . ']" id="role_id_' . $id . '" value="' . $id . '"/>
 						</th>' . ( ( $new ) ? '' : '
 						<td>
@@ -451,6 +496,11 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			if( is_null( $id ) )
 				return;
 			
+			if( !is_array( $this->role_members[$id] ) ) {
+				print( '<pre><code>' );
+				var_dump( $this->role_members );
+				print( '</code></pre>' );
+			}
 			$output = '
 					<tr valign="top">
 						<th scope="row">

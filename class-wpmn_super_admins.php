@@ -24,6 +24,7 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			if( !parent::__construct() )
 				return false;
 			
+			$this->is_multi_network = true;
 			$this->can_manage_plugin();
 			
 			add_action( 'plugins_loaded', 'set_multi_network_admins' );
@@ -51,7 +52,8 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 				__( 'Deactivate On All Networks', ESA_TEXT_DOMAIN ) .
 				'</a>';
 			
-			array_push( $links, $multi_network_activate_link, $multi_network_deactivate_link );
+			if( !strstr( __FILE__, 'mu-plugins' ) )
+				array_push( $links, $multi_network_activate_link, $multi_network_deactivate_link );
 			return $links;
 		}
 		
@@ -167,6 +169,9 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			$updated = true;
 			foreach( $networks as $network ) {
 				$this->switch_to_site( $network->id );
+				global $new_whitelist_options;
+				if( !array_key_exists( ESA_OPTION_NAME, $new_whitelist_options ) )
+					register_setting( ESA_OPTION_NAME, ESA_OPTION_NAME, array( $this, 'verify_options' ) );
 				$upd = update_site_option( ESA_OPTION_NAME, $values_to_use );
 				if( !$upd )
 					$updated = false;
@@ -199,6 +204,21 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			return $this->options;
 		}
 		
+		/**
+		 * Remove this plugin's settings from the database
+		 */
+		function delete_settings() {
+			global $wpdb;
+			$networks = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT id FROM " . $wpdb->site ) );
+			$updated = true;
+			foreach( $networks as $network ) {
+				$this->switch_to_site( $network->id );
+				delete_site_option( ESA_OPTION_NAME );
+				$this->restore_current_site();
+			}
+			return print('<div class="warning">The settings for this plugin have been deleted.</div>');
+		}
+		
 		function switch_to_site( $site_id ) {
 			if( function_exists( 'wpmn_switch_to_network' ) ) {
 				return wpmn_switch_to_network( $site_id );
@@ -209,6 +229,7 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 				}
 				return switch_to_site( $site_id );
 			} else {
+				wp_die( 'A function to switch between networks could not be found' );
 				return false;
 			}
 		}
