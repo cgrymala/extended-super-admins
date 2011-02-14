@@ -75,15 +75,11 @@ You can find descriptions of most of the capabilities in the WordPress codex. Un
 
 If either of those plugins is active, this plugin will attempt to use and save any and all of its settings across all of the networks. There is currently no way, with WPMN or Networks for WordPress activated, to use different settings on individual networks.
 
-== Upgrade Notice ==
+== Screenshots ==
 
+1. The admin area for this plugin. In this shot, a single role has been defined.
 
-
-= 0.3a =
-
-The previous version was missing all subfolders. This is a necessary upgrade to get the plugin working properly.
-
-
+2. The way the admin area looks while modifying an existing role. In this shot, an example of the Codex information is being displayed.
 
 == Changelog ==
 
@@ -92,6 +88,9 @@ The previous version was missing all subfolders. This is a necessary upgrade to 
 = 0.4a =
 * Plugin now retrieves information about each capability (where available) from the WordPress Codex
 * In addition to John James Jacoby's [WP Multi Network](http://wordpress.org/extend/plugins/wp-multi-network/) plugin, this plugin should now be compatible with David Dean's [Networks for WordPress](http://wordpress.org/extend/plugins/networks-for-wordpress/) plugin.
+* Fixed bugs that caused roles not to be deleted properly
+* Made minor UI changes to make it more obvious how roles are added and modified
+* Added a notice warning users when a role is added without a name
 
 = 0.3a =
 
@@ -102,3 +101,12 @@ Corrected a version inconsistency between the readme file and the main plugin fi
 
 = 0.1 =
 This is the first version.
+
+== Upgrade Notice ==
+
+
+
+= 0.3a =
+
+The previous version was missing all subfolders. This is a necessary upgrade to get the plugin working properly.
+

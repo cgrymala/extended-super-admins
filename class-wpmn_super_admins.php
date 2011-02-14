@@ -170,7 +170,7 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			foreach( $networks as $network ) {
 				$this->switch_to_site( $network->id );
 				global $new_whitelist_options;
-				if( !array_key_exists( ESA_OPTION_NAME, $new_whitelist_options ) )
+				if( !is_array( $new_whitelist_options ) || !array_key_exists( ESA_OPTION_NAME, $new_whitelist_options ) )
 					register_setting( ESA_OPTION_NAME, ESA_OPTION_NAME, array( $this, 'verify_options' ) );
 				$upd = update_site_option( ESA_OPTION_NAME, $values_to_use );
 				if( !$upd )
