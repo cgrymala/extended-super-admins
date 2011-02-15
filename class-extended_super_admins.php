@@ -85,10 +85,10 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			
 			if( function_exists( 'wp_register_style' ) ) {
 				wp_register_style( 'jquery-ui-dialog', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/smoothness/jquery-ui.css', array(), '1.8.9', 'all' );
-				wp_register_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.css', __FILE__ ), array('jquery-ui-dialog'), '0.1', 'all' );
+				wp_register_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.css', __FILE__ ), array('jquery-ui-dialog'), '0.4a', 'all' );
 			}
 			if( function_exists( 'wp_register_script' ) ) {
-				wp_register_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.js', __FILE__ ), array('jquery','jquery-ui-dialog'), '0.1', true );
+				wp_register_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.js', __FILE__ ), array('jquery','jquery-ui-dialog'), '0.4a', true );
 			}
 			
 			return true;
