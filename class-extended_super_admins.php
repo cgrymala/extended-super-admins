@@ -83,6 +83,14 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			add_action( 'init', array( $this, '_init' ) );
 			add_filter('plugin_action_links_' . ESA_PLUGIN_BASENAME, array($this, 'add_settings_link'));
 			
+			if( function_exists( 'wp_register_style' ) ) {
+				wp_register_style( 'jquery-ui-dialog', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/smoothness/jquery-ui.css', array(), '1.8.9', 'all' );
+				wp_register_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.css', __FILE__ ), array('jquery-ui-dialog'), '0.1', 'all' );
+			}
+			if( function_exists( 'wp_register_script' ) ) {
+				wp_register_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.js', __FILE__ ), array('jquery','jquery-ui-dialog'), '0.1', true );
+			}
+			
 			return true;
 		}
 		
@@ -90,15 +98,15 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			if( function_exists( 'load_plugin_textdomain' ) )
 				load_plugin_textdomain( ESA_TEXT_DOMAIN, false, ESA_PLUGIN_PATH . '/lang/' );
 				
-			if( is_admin() ) {
+			if( is_admin() && isset( $_REQUEST['page'] ) && $_REQUEST['page'] == ESA_OPTIONS_PAGE ) {
 				if( function_exists( 'register_setting' ) )
 					register_setting( ESA_OPTION_NAME, ESA_OPTION_NAME, array( $this, 'verify_options' ) );
-				if( function_exists( 'wp_enqueue_script' ) )
-					wp_enqueue_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.js', __FILE__ ), array('jquery','jquery-ui-dialog'), '0.1', true );
+				if( function_exists( 'wp_enqueue_script' ) ) {
+					wp_enqueue_script( 'esa_admin_scripts' );
+				}
 				
 				if( function_exists( 'wp_enqueue_style' ) ) {
-					wp_register_style( 'jquery-ui-dialog', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/smoothness/jquery-ui.css', array(), '1.8.9', 'all' );
-					wp_enqueue_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.css', __FILE__ ), array('jquery-ui-dialog'), '0.1', 'all' );
+					wp_enqueue_style( 'esa_admin_styles' );
 				}
 			}
 		}
@@ -497,9 +505,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				return;
 			
 			if( !is_array( $this->role_members[$id] ) ) {
-				print( '<pre><code>' );
-				var_dump( $this->role_members );
-				print( '</code></pre>' );
+				$this->role_members[$id] = array( 0 => '' );
 			}
 			$output = '
 					<tr valign="top">
