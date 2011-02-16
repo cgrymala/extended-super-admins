@@ -4,7 +4,7 @@
  * @package WordPress
  * @subpackage ExtendedSuperAdmins
  * @since 0.1a
- * @version 0.5a
+ * @version 0.6a
  */
 
 /**
@@ -85,11 +85,10 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			add_filter('network_admin_plugin_action_links_' . ESA_PLUGIN_BASENAME, array($this, 'add_settings_link'));
 			
 			if( function_exists( 'wp_register_style' ) ) {
-				wp_register_style( 'jquery-ui-dialog', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/smoothness/jquery-ui.css', array(), '1.8.9', 'all' );
-				wp_register_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.css', __FILE__ ), array('jquery-ui-dialog'), '0.4a', 'all' );
+				wp_register_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.css', __FILE__ ), array(), '0.5a', 'all' );
 			}
 			if( function_exists( 'wp_register_script' ) ) {
-				wp_register_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.js', __FILE__ ), array('jquery','jquery-ui-dialog'), '0.4a', true );
+				wp_register_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.js', __FILE__ ), array('jquery','post'), '0.5.1a', true );
 			}
 			
 			return true;
@@ -111,6 +110,9 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				if( function_exists( 'wp_enqueue_style' ) ) {
 					wp_enqueue_style( 'esa_admin_styles' );
 				}
+				
+				add_action( 'load-settings_page_' . ESA_OPTIONS_PAGE, array( &$this, 'add_settings_meta_boxes' ) );
+				add_action( 'load-settings_page_' . ESA_OPTIONS_PAGE, array( &$this, '_save_settings_options' ) );
 			}
 		}
 		
@@ -362,6 +364,57 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			return array_merge( $caps, array( 'do_not_allow' ) );
 		}
 		
+		function add_settings_meta_boxes() {
+			$output = '';
+			foreach( $this->role_id as $id ) {
+				/*print("\n<!-- We are adding a new meta box for the item with an ID of $id -->\n");*/
+				if( function_exists( 'add_meta_box' ) ) {
+					add_meta_box( 'esa-options-meta-' . $id, $this->role_name[$id], array( $this, 'make_settings_meta_boxes' ), ESA_OPTIONS_PAGE, 'advanced', 'low', array( 'id' => $id ) );
+				} else {
+					wp_die( 'While trying to create the existing role meta boxes, we found that the meta box function does not exist' );
+					$output .= $this->admin_options_section( $id );
+				}
+			}
+			if( function_exists( 'add_meta_box' ) ) {
+				if( empty( $this->role_id ) ) {
+					$id = 1;
+				} else {
+					$id = ( max( $this->role_id ) + 1 );
+				}
+				/*print("\n<!-- We are adding a new meta box for a new role -->\n");*/
+				add_meta_box( 'esa-options-meta-' . $id, __( 'Add a New Role', ESA_TEXT_DOMAIN ), array( $this, 'make_settings_meta_boxes' ), ESA_OPTIONS_PAGE, 'normal', 'high', array( 'id' => NULL ) );
+			} else {
+				wp_die( 'While trying to create a meta box for the new role, we found that the meta box function does not exist' );
+				$output .= $this->admin_options_section();
+			}
+			if( !function_exists( 'add_meta_box' ) )
+				return $output;
+			else
+				return NULL;
+		}
+		
+		function _save_settings_options() {
+			global $wp_version;
+			/* We need to save our options if the form was already submitted */
+			if( isset( $_POST['esa_options_action'] ) && wp_verify_nonce( $_POST['_wp_nonce'], 'esa_options_save' ) ) {
+				if( $this->save_options( $_POST ) ) {
+					if( version_compare( $wp_version, '3.0.9', '>' ) )
+						wp_redirect(network_admin_url('settings.php?page=esa_options_page&action-message=updated'));
+					else
+						wp_redirect(admin_url('ms-admin.php?page=esa_options_page&action-message=updated'));
+				} else {
+					if( version_compare( $wp_version, '3.0.9', '>' ) )
+						wp_redirect(network_admin_url('settings.php?page=esa_options_page&action-message=failed'));
+					else
+						wp_redirect(admin_url('ms-admin.php?page=esa_options_page&action-message=failed'));
+				}
+			} elseif( isset( $_POST['esa_options_action'] ) ) {
+				$this->debug .= '<div class="warning">';
+				$this->debug .= __( 'The nonce for these options could not be verified.', ESA_TEXT_DOMAIN );
+				$this->debug .= '</div>';
+			}
+		}
+		
 		function admin_options_page() {
 			if( !current_user_can( 'manage_esa_options' ) ) {
 ?>
@@ -380,20 +433,22 @@ if( !class_exists( 'extended_super_admins' ) ) {
 					return $this->delete_settings();
 				}
 			}
-			/* We need to save our options if the form was already submitted */
-			if( isset( $_POST['esa_options_action'] ) && wp_verify_nonce( $_POST['_wp_nonce'], 'esa_options_save' ) ) {
-				$this->save_options( $_POST );
-			} elseif( isset( $_POST['esa_options_action'] ) ) {
-				$this->debug .= '<div class="warning">';
-				$this->debug .= __( 'The nonce for these options could not be verified.', ESA_TEXT_DOMAIN );
-				$this->debug .= '</div>';
-			}
-
+			
 			/* Start our output */
 			$output = '
 	<div class="wrap">';
-			$output = '
+			$output .= '
 		<h2>' . __( 'Extended Super Admin Settings', ESA_TEXT_DOMAIN ) . '</h2>';
+			if( isset( $_REQUEST['action-message'] ) ) {
+				if( $_REQUEST['action-message'] == 'updated' )
+					$output .= '<div class="updated">' . __( 'The options for this plugin were updated successfully.' ) . '</div>';
+				else
+					$output .= '<div class="error">' . __( 'There was an error updating the options for this plugin.' ) . '</div>';
+			}
+			$output .= '
+		<div id="poststuff" class="metabox-holder">
+			<div id="post-body">
+				<div id="post-body-content">';
 			if( !empty( $this->debug ) ) {
 				$output .= $this->debug;
 				unset( $this->debug );
@@ -402,19 +457,34 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			$output .= '
 		<form method="post" action="">';
 			$output .= wp_nonce_field( 'esa_options_save', '_wp_nonce', true, false );
+			$output .= wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false, false );
+			$output .= wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false, false );
+			
+			echo $output;
+			$output = '';
 			/* Output a set of option fields for each role that's already been created */
-			foreach( $this->role_id as $id ) {
-				$output .= $this->admin_options_section( $id );
+			if( !function_exists( 'add_meta_box' ) ) {
+				wp_die( 'While outputting the admin page, we found that the meta box function does not exist' );
+				$output .= $this->add_settings_meta_boxes();
 			}
-			$output .= $this->admin_options_section();
-			$output .= '
+			if( empty( $output ) ) {
+				do_meta_boxes( ESA_OPTIONS_PAGE, 'normal', NULL );
+				do_meta_boxes( ESA_OPTIONS_PAGE, 'advanced', NULL );
+			} else {
+				echo $output;
+			}
+
+			$output = '
 			<p class="submit">
 	        	<input type="submit" class="button-primary" value="' . __('Save', ESA_TEXT_DOMAIN) . '"/>
 			</p>
 			<input type="hidden" name="esa_options_action" value="save"/>
 		</form>';
 			$output .= '
-	</div>';
+				</div><!-- #post-body-content -->
+			</div><!-- #post-body -->
+		</div><!-- #poststuff --><br class="clear">
+	</div><!-- .wrap -->';
 			echo $output;
 		}
 		
@@ -435,7 +505,6 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				$this->role_members[$id] = array();
 				$this->role_caps[$id] = array();
 			}
-			
 			$output = '
 			<table class="form-table esa-options-table" id="esa-options-table-' . $id . '">
 				<thead>
@@ -459,6 +528,54 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			return $output;
 		}
 		
+		function make_settings_meta_boxes() {
+			$id = NULL;
+			
+			$func_args = func_get_args();
+			if( is_array( $func_args ) )
+				$func_args = array_pop( $func_args );
+			if( is_array( $func_args ) && array_key_exists( 'args', $func_args ) )
+				$args = $func_args['args'];
+			if( is_array( $args ) )
+				$id = array_shift( $args );
+			unset( $args, $func_args );
+			
+			$new = false;
+			if( !empty( $id ) ) {
+				$role_id = $id;
+			} else {
+				$new = true;
+				if( empty( $this->role_id ) ) {
+					$id = 1;
+				} else {
+					$id = ( max( $this->role_id ) + 1 );
+				}
+				$role_id = $id;
+				$this->role_id[$id] = $id;
+				$this->role_name[$id] = '';
+				$this->role_members[$id] = array();
+				$this->role_caps[$id] = array();
+			}
+			
+			$delchkbx = ($new) ? '' : '<label for="delete_role_' . $id . '">' . __( 'Would you like this role to be deleted?', ESA_TEXT_DOMAIN ) . '</label> <input type="checkbox" value="on" name="delete_role[' . $id . ']" id="delete_role_' . $id . '"/>';
+			
+			$output = '
+			<table class="form-table esa-options-table" id="esa-options-table-' . $id . '">';
+			$output .= ( empty( $delchkbx ) ) ? '' : '
+				<thead>
+					<th>&nbsp;</th><td>' . $delchkbx . '</td>
+				</thead>';
+			$output .= '
+				<tbody id="esa_options_' . $id . '">';
+				$output .= $this->role_name_options( $id );
+				$output .= $this->role_caps_options( $id );
+				$output .= $this->role_members_options( $id );
+				$output .= '
+				</tbody>
+			</table>';
+			echo $output;
+		}
+		
 		function role_name_options( $id=NULL ) {
 			if( is_null( $id ) )
 				return;
@@ -470,6 +587,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 						</th>';
 			$output .= '
 						<td>
+							<input type="hidden" name="role_id[' . $id . ']" id="role_id_' . $id . '" value="' . $id . '"/>
 							<input type="text" name="role_name[' . $id . ']" id="role_name_' . $id . '" value="' . ( ( array_key_exists( $id, $this->role_name ) ) ? $this->role_name[$id] : '' ) . '"/>
 						</td>
 					</tr>';
@@ -591,7 +709,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			global $wp_version;
 			$options_page = ( version_compare( $wp_version, '3.0.9', '>' ) ) ? 'settings.php' : 'ms-admin.php';
 			/* Add the new options page to the Super Admin menu */
-			add_submenu_page( 
+			$rt = add_submenu_page( 
 				/*$parent_slug = */$options_page, 
 				/*$page_title = */'Extended Super Admin Settings', 
 				/*$menu_title = */'Extended Super Admin', 

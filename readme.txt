@@ -4,7 +4,7 @@ Donate link: http://www.umw.edu/gift/make_a_gift/default.php
 Tags: wpmu, multisite, super admins, site admin, role manager, capabilities, wpmn
 Requires at least: 3.0
 Tested up to: 3.1-RC3
-Stable tag: 0.4a
+Stable tag: 0.5a
 
 This plugin allows you to create multiple levels of Super Admins in a multi-site configuration.
 
@@ -38,7 +38,8 @@ If you downloaded and installed this plugin from the WordPress repository, you w
 
 * Continue to improve the UI for the plugin to make it as user-friendly as possible
 
-* Implement a better way to warn users that they tried to create a non-valid role
+== Known Issues ==
+* On occasion, the JavaScript in this plugin might cause CPU usage to spike and freeze the browser momentarily
 
 == Installation ==
 1. Download and unzip the extended_super_admins package.
@@ -72,10 +73,19 @@ If either of those plugins is active, this plugin will attempt to use and save a
 This plugin creates a new capability called "manage_esa_options". If you do not want a user to be able to modify the settings for this plugin, simply revoke that capability from any users that belong to the modified role(s).
 
 == Screenshots ==
-1. The admin area for this plugin. In this shot, a single role has been defined.
-2. The way the admin area looks while modifying an existing role. In this shot, an example of the Codex information is being displayed.
+1. The admin area for this plugin. In this shot, a single role has been defined, and both boxes have been collapsed.
+2. The way the admin area looks while adding a new role.
+3. The way the admin area looks while modifying an existing role. In this shot, an example of the Codex information is being displayed.
 
 == Changelog ==
+= 0.6a =
+* The JavaScript for this plugin has been optimized quite a bit
+* The admin options page now utilizes the standard WordPress meta box interface rather than using a custom interface (thanks to [RavanH](http://profiles.wordpress.org/users/RavanH/) for the suggestion)
+* Updated the way the Codex dialogs are displayed on-screen
+
+= 0.5a =
+* Fixed bugs that caused roles not to be deleted properly if they had been added without all criteria specified
+
 = 0.4a =
 * Plugin now retrieves information about each capability (where available) from the WordPress Codex
 * In addition to John James Jacoby's [WP Multi Network](http://wordpress.org/extend/plugins/wp-multi-network/) plugin, this plugin should now be compatible with David Dean's [Networks for WordPress](http://wordpress.org/extend/plugins/networks-for-wordpress/) plugin.
@@ -94,6 +104,9 @@ Corrected a version inconsistency between the readme file and the main plugin fi
 This is the first version.
 
 == Upgrade Notice ==
+= 0.5a =
+This version fixes multiple bugs again, and includes further improvements to the user interface. An update is highly recommended.
+
 = 0.4a =
 This version fixes multiple bugs, and includes improvements to the user interface. An update is recommended.
 

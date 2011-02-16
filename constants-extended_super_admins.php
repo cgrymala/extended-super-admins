@@ -4,7 +4,7 @@
  * @package WordPress
  * @subpackage ExtendedSuperAdmins
  * @since 0.1a
- * @version 0.4a
+ * @version 0.6a
  */
 
 if( !defined( 'ESA_OPTION_NAME' ) )
@@ -47,6 +47,6 @@ if( !defined( 'ESA_VERSION' ) )
 	/**
 	 * Define the current version of this plugin
 	 */
-	define( 'ESA_VERSION', '0.3a' );
+	define( 'ESA_VERSION', '0.6a' );
 
 ?>
