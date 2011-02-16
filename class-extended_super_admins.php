@@ -4,7 +4,7 @@
  * @package WordPress
  * @subpackage ExtendedSuperAdmins
  * @since 0.1a
- * @version 0.4a
+ * @version 0.5a
  */
 
 /**
@@ -82,6 +82,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			add_action( 'admin_menu', array( $this, 'add_submenu_page' ) );
 			add_action( 'init', array( $this, '_init' ) );
 			add_filter('plugin_action_links_' . ESA_PLUGIN_BASENAME, array($this, 'add_settings_link'));
+			add_filter('network_admin_plugin_action_links_' . ESA_PLUGIN_BASENAME, array($this, 'add_settings_link'));
 			
 			if( function_exists( 'wp_register_style' ) ) {
 				wp_register_style( 'jquery-ui-dialog', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/smoothness/jquery-ui.css', array(), '1.8.9', 'all' );
@@ -101,6 +102,8 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			if( is_admin() && isset( $_REQUEST['page'] ) && $_REQUEST['page'] == ESA_OPTIONS_PAGE ) {
 				if( function_exists( 'register_setting' ) )
 					register_setting( ESA_OPTION_NAME, ESA_OPTION_NAME, array( $this, 'verify_options' ) );
+				else
+					add_filter( 'sanitize_option_' . ESA_OPTION_NAME, array( $this, 'verify_options' ) );
 				if( function_exists( 'wp_enqueue_script' ) ) {
 					wp_enqueue_script( 'esa_admin_scripts' );
 				}
@@ -151,7 +154,10 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		 * @param array the values to use to set the options
 		 */
 		function set_options( $values_to_use=NULL ) {
+			$options_set = false;
 			if( !empty( $values_to_use ) ) {
+				$options_set = true;
+				
 				$this->options = array(
 					'role_id'		=> $values_to_use['role_id'],
 					'role_name'		=> $values_to_use['role_name'],
@@ -159,13 +165,25 @@ if( !class_exists( 'extended_super_admins' ) ) {
 					'role_caps'		=> $values_to_use['role_caps'],
 				);
 				foreach( $this->options['role_id'] as $id ) {
-					if( ( empty( $this->options['role_name'][$id] ) && empty( $this->options['role_members'][$id] ) && empty( $this->options['role_caps'][$id] ) ) || ( isset($values_to_use['delete_role'][$id] ) && $values_to_use['delete_role'][$id] == 'on' ) ) {
-						unset( $this->options['role_id'][$id], $this->options['role_name'][$id], $this->options['role_members'][$id], $this->options['role_caps'][$id] );
-					}
 					if( empty( $this->options['role_name'][$id] ) ) {
 						unset( $this->options['role_id'][$id], $this->options['role_name'][$id], $this->options['role_members'][$id], $this->options['role_caps'][$id] );
 						$this->debug .= '<div class="error">' . __( 'One of the roles you attempted to create did not have a name. Therefore it was not saved. Please try again.', ESA_TEXT_DOMAIN ) . '</div>';
+					} else {
+						if( empty( $this->options['role_members'][$id] ) ) {
+							$this->options['role_members'][$id] = array(0=>NULL);
+						}
+						if( empty( $this->options['role_caps'][$id] ) ) {
+							$this->options['role_caps'][$id] = array(0=>NULL);
+						}
 					}
+					
+					if( ( empty( $this->options['role_name'][$id] ) && empty( $this->options['role_members'][$id] ) && empty( $this->options['role_caps'][$id] ) ) || ( isset($values_to_use['delete_role'][$id] ) && $values_to_use['delete_role'][$id] == 'on' ) ) {
+						unset( $this->options['role_id'][$id], $this->options['role_name'][$id], $this->options['role_members'][$id], $this->options['role_caps'][$id] );
+					}
+				}
+				if( empty( $this->options ) ) {
+					delete_site_option( ESA_OPTION_NAME );
+					add_site_option( ESA_OPTION_NAME, array() );
 				}
 			}
 			
@@ -316,7 +334,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		function revoke_privileges( $caps, $cap, $user_id, $args ) {
 			if( $cap == 'manage_esa_options' )
 				$this->perms_checked = true;
-			
+				
 			if( !is_super_admin() ) {
 				if( $cap == 'manage_esa_options' )
 					return array_merge( $caps, array( 'do_not_allow' ) );
@@ -338,7 +356,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			if( is_null( $role_id ) )
 				return $caps;
 			
-			if( !array_key_exists( $cap, $this->role_caps[$role_id] ) )
+			if( !is_array( $this->role_caps[$role_id] ) || !array_key_exists( $cap, $this->role_caps[$role_id] ) )
 				return $caps;
 				
 			return array_merge( $caps, array( 'do_not_allow' ) );

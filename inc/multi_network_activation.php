@@ -37,8 +37,12 @@ if( $_GET['options-action'] == 'multi_network_activate' ) {
 			$wpmn_super_admins_obj->switch_to_site( $network->id );
 			if( current_user_can( 'manage_esa_options' ) ) {
 				$asp = maybe_unserialize( get_site_option( 'active_sitewide_plugins' ) );
-				if( !array_key_exists( ESA_PLUGIN_BASENAME, $asp ) ) {
-					$asp = array_merge( $asp, array( ESA_PLUGIN_BASENAME => time() ) );
+				if( empty( $asp ) || !array_key_exists( ESA_PLUGIN_BASENAME, $asp ) ) {
+					if( empty( $asp ) ) {
+						$asp = array( ESA_PLUGIN_BASENAME => time() );
+					} else {
+						$asp = array_merge( $asp, array( ESA_PLUGIN_BASENAME => time() ) );
+					}
 					update_site_option( 'active_sitewide_plugins', $asp );
 					if( !isset( $wpmn_super_admins_obj ) ) {
 						$wpmn_super_admins_obj = new wpmn_super_admins();
@@ -75,10 +79,14 @@ if( $_GET['options-action'] == 'multi_network_activate' ) {
 			$wpmn_super_admins_obj->switch_to_site( $network->id );
 			if( current_user_can( 'manage_esa_options' ) ) {
 				$asp = maybe_unserialize( get_site_option( 'active_sitewide_plugins' ) );
-				if( array_key_exists( ESA_PLUGIN_BASENAME, $asp ) ) {
+				if( !empty( $asp ) && array_key_exists( ESA_PLUGIN_BASENAME, $asp ) ) {
 					unset( $asp[ESA_PLUGIN_BASENAME] );
 					/*$asp = array_splice( $asp, array_search( $asp[ADAUTHINT_PLUGIN_BASENAME], $asp ), 1 );*/
-					update_site_option( 'active_sitewide_plugins', $asp );
+					if( empty( $asp ) ) {
+						delete_site_option( 'active_sitewide_plugins' );
+					} else {
+						update_site_option( 'active_sitewide_plugins', $asp );
+					}
 					echo '<p>' . __( 'The Extended Super Admins plug-in was successfully deactivated for the network with an ID of ', ESA_TEXT_DOMAIN ) . $network->id . '</p>';
 				} else {
 					echo '<p>';

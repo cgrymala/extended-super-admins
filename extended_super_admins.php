@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Extended Super Admins
-Version: 0.4a
+Version: 0.5a
 Plugin URI: http://plugins.ten-321.com/extended-super-admins/
 Description: Enables the creation of multiple levels of "Super Admins" within WordPress Multi Site. Multiple new roles can be created, and all capabilities generally granted to a "Super Admin" can be revoked individually.
 Author: Curtiss Grymala
@@ -75,6 +75,7 @@ if( !function_exists( 'is_multinetwork' ) ) {
 					return true;
 				}
 			}
+			$wpdb->set_blog_id( $oldblog );
 		}
 		
 		return false;
