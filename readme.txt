@@ -42,7 +42,7 @@ If you downloaded and installed this plugin from the WordPress repository, you w
 * On occasion, the JavaScript in this plugin might cause CPU usage to spike and freeze the browser momentarily
 
 == Installation ==
-1. Download and unzip the extended_super_admins package.
+1. Download and unzip the extended-super-admins package.
 1. Upload the 'extended-super-admins' folder to the '/wp-content/plugins/' directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. Promote any users that you want to manage through this plugin to Super Admin status
