@@ -4,7 +4,7 @@ Donate link: http://www.umw.edu/gift/make_a_gift/default.php
 Tags: wpmu, multisite, super admins, site admin, role manager, capabilities, wpmn
 Requires at least: 3.0
 Tested up to: 3.1-RC3
-Stable tag: 0.5a
+Stable tag: 0.6a
 
 This plugin allows you to create multiple levels of Super Admins in a multi-site configuration.
 

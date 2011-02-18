@@ -81,15 +81,9 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			add_action( 'network_admin_menu', array( $this, 'add_submenu_page' ) );
 			add_action( 'admin_menu', array( $this, 'add_submenu_page' ) );
 			add_action( 'init', array( $this, '_init' ) );
+			add_action( 'admin_init', array( $this, '_admin_init' ) );
 			add_filter('plugin_action_links_' . ESA_PLUGIN_BASENAME, array($this, 'add_settings_link'));
 			add_filter('network_admin_plugin_action_links_' . ESA_PLUGIN_BASENAME, array($this, 'add_settings_link'));
-			
-			if( function_exists( 'wp_register_style' ) ) {
-				wp_register_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.css', __FILE__ ), array(), '0.5a', 'all' );
-			}
-			if( function_exists( 'wp_register_script' ) ) {
-				wp_register_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.js', __FILE__ ), array('jquery','post'), '0.5.1a', true );
-			}
 			
 			return true;
 		}
@@ -99,10 +93,27 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				load_plugin_textdomain( ESA_TEXT_DOMAIN, false, ESA_PLUGIN_PATH . '/lang/' );
 				
 			if( is_admin() && isset( $_REQUEST['page'] ) && $_REQUEST['page'] == ESA_OPTIONS_PAGE ) {
-				if( function_exists( 'register_setting' ) )
-					register_setting( ESA_OPTION_NAME, ESA_OPTION_NAME, array( $this, 'verify_options' ) );
-				else
-					add_filter( 'sanitize_option_' . ESA_OPTION_NAME, array( $this, 'verify_options' ) );
+				if( function_exists( 'wp_register_style' ) ) {
+					wp_register_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.css', __FILE__ ), array(), '0.6a', 'all' );
+				}
+				if( function_exists( 'wp_register_script' ) ) {
+					wp_register_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.js', __FILE__ ), array('jquery','post'), '0.6a', true );
+				}
+				
+				if( version_compare( '3.0.9', $GLOBALS['wp_version'], '<' ) ) {
+					add_action( 'load-settings_page_' . ESA_OPTIONS_PAGE, array( $this, 'add_settings_meta_boxes' ) );
+					add_action( 'load-settings_page_' . ESA_OPTIONS_PAGE, array( $this, '_save_settings_options' ) );
+				} else {
+					add_action( '_admin_menu', array( $this, 'add_settings_meta_boxes' ) );
+					add_action( '_admin_menu', array( $this, '_save_settings_options' ) );
+				}
+			}
+				
+			return true;
+		}
+		
+		function _admin_init() {
+			if( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == ESA_OPTIONS_PAGE ) {
 				if( function_exists( 'wp_enqueue_script' ) ) {
 					wp_enqueue_script( 'esa_admin_scripts' );
 				}
@@ -111,8 +122,11 @@ if( !class_exists( 'extended_super_admins' ) ) {
 					wp_enqueue_style( 'esa_admin_styles' );
 				}
 				
-				add_action( 'load-settings_page_' . ESA_OPTIONS_PAGE, array( &$this, 'add_settings_meta_boxes' ) );
-				add_action( 'load-settings_page_' . ESA_OPTIONS_PAGE, array( &$this, '_save_settings_options' ) );
+				if( function_exists( 'register_setting' ) )
+					register_setting( ESA_OPTION_NAME, ESA_OPTION_NAME, array( $this, 'verify_options' ) );
+				else
+					/*wp_die( 'The <code>register_setting()</code> function is not available.' );*/
+					add_filter( 'sanitize_option_' . ESA_OPTION_NAME, array( $this, 'verify_options' ) );
 			}
 		}
 		
