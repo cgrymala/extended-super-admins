@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Extended Super Admins
-Version: 0.6a
+Version: 0.7a
 Plugin URI: http://plugins.ten-321.com/extended-super-admins/
 Description: Enables the creation of multiple levels of "Super Admins" within WordPress Multi Site. Multiple new roles can be created, and all capabilities generally granted to a "Super Admin" can be revoked individually.
 Author: Curtiss Grymala
@@ -45,10 +45,10 @@ function instantiate_extended_super_admins() {
 }
 if( !function_exists( 'is_multinetwork' ) ) {
 	function is_multinetwork() {
-		if( function_exists( 'wpmn_switch_to_network' ) || function_exists( 'switch_to_site' ) )
+		if( function_exists( 'wpmn_switch_to_network' ) || function_exists( 'switch_to_site' ) || function_exists( 'ra_network_page' ) )
 			return true;
 			
-		if( !file_exists( WP_PLUGIN_DIR . '/wordpress-multi-network/wordpress-multi-network.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/wordpress-multi-network.php' ) && !file_exists( WP_PLUGIN_DIR . '/networks-for-wordpress/index.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/networks-for-wordpress.php' ) )
+		if( !file_exists( WP_PLUGIN_DIR . '/wordpress-multi-network/wordpress-multi-network.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/wordpress-multi-network.php' ) && !file_exists( WP_PLUGIN_DIR . '/networks-for-wordpress/index.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/networks-for-wordpress.php' ) && !file_exists( WP_PLUGIN_DIR . '/Networks-Plus/ra-networks.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/ra-network.php' ) )
 			return false;
 		
 		global $wpdb;
@@ -59,6 +59,9 @@ if( !function_exists( 'is_multinetwork' ) ) {
 				return true;
 			} elseif( array_key_exists( 'networks-for-wordpress/index.php', maybe_unserialize( $plugin->meta_value ) ) ) {
 				require_once( WP_PLUGIN_DIR . '/networks-for-wordpress/index.php' );
+				return true;
+			} elseif( array_key_exists( 'Networks-Plus/ra-networks.php', maybe_unserialize( $plugin->meta_value ) ) ) {
+				require_once( WP_PLUGIN_DIR . '/Networks-Plus/ra-networks.php' );
 				return true;
 			}
 		}
@@ -72,6 +75,9 @@ if( !function_exists( 'is_multinetwork' ) ) {
 					return true;
 				} elseif( array_key_exists( 'networks-for-wordpress/index.php', maybe_unserialize( $plugin->option_value ) ) ) {
 					require_once( WP_PLUGIN_DIR . '/networks-for-wordpress/index.php' );
+					return true;
+				} elseif( array_key_exists( 'Networks-Plus/ra-networks.php', maybe_unserialize( $plugin->option_value ) ) ) {
+					require_once( WP_PLUGIN_DIR . '/Networks-Plus/ra-networks.php' );
 					return true;
 				}
 			}

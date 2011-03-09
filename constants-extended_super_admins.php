@@ -4,8 +4,14 @@
  * @package WordPress
  * @subpackage ExtendedSuperAdmins
  * @since 0.1a
- * @version 0.6a
+ * @version 0.7a
  */
+
+if( !defined( 'ESA_VERSION' ) )
+	/**
+	 * Define the current version of this plugin
+	 */
+	define( 'ESA_VERSION', '0.7a' );
 
 if( !defined( 'ESA_OPTION_NAME' ) )
 	/**
@@ -43,10 +49,24 @@ if( !defined( 'ESA_TEXT_DOMAIN' ) )
 	 */
 	 define( 'ESA_TEXT_DOMAIN', 'esa_text_domain' );
 
-if( !defined( 'ESA_VERSION' ) )
+if( !defined( 'ESA_CODEX_PAGE' ) )
 	/**
-	 * Define the current version of this plugin
+	 * Define the API location for the codex information
+	 * @since 0.7a
 	 */
-	define( 'ESA_VERSION', '0.6a' );
+	define( 'ESA_CODEX_PAGE', 'http://codex.wordpress.org/api.php' );
+	
+if( !defined( 'ESA_CODEX_QUERY' ) )
+	/**
+	 * Define the API Query to retrieve the Codex information
+	 * @since 0.7a
+	 */
+	define( 'ESA_CODEX_QUERY', '?action=query&prop=revisions&meta=siteinfo&titles=Roles_and_Capabilities&rvsection=13&rvprop=content|timestamp&format=php' );
 
+if( !defined( 'ESA_CODEX_PARSE_QUERY' ) )
+	/**
+	 * Define the API Query to parse the Codex information
+	 * @since 0.7a
+	 */
+	define( 'ESA_CODEX_PARSE_QUERY', '?format=php&action=parse&text=' );
 ?>

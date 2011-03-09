@@ -4,7 +4,7 @@
  * @package WordPress
  * @subpackage ExtendedSuperAdmins
  * @since 0.1a
- * @version 0.6a
+ * @version 0.7a
  */
 
 /**
@@ -62,7 +62,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		 * @since 0.4a
 		 */
 		var $caps_descriptions = array(
-			'manage_esa_options' => '<p>Capability specific to the Extended Super Admins plugin. Allows user to manage the options for the Extended Super Admins plugin.</p>',
+			'manage_esa_options' => '<div id="_role_caps_manage_esa_options" class="_role_caps"><h3>manage_esa_options</h3><div class="_single_cap"><p>Capability specific to the Extended Super Admins plugin. Allows user to manage the options for the Extended Super Admins plugin.</p></div></div>',
 		);
 		
 		/**
@@ -72,7 +72,9 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			if( !is_multisite() || !is_user_logged_in() )
 				return false;
 			
-			$this->set_options();
+			$esa_options = isset( $GLOBALS['esa_options'] ) ? $GLOBALS['esa_options'] : NULL;
+			$force_update = isset( $GLOBALS['force_esa_options_update'] ) ? $GLOBALS['force_esa_options_update'] : false;
+			$this->set_options( $esa_options, $force_update );
 			add_role( 'esa_plugin_manager', 'Extended Super Admin Manager', array( 'manage_esa_options' ) );
 			
 			$this->can_manage_plugin();
@@ -93,11 +95,15 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				load_plugin_textdomain( ESA_TEXT_DOMAIN, false, ESA_PLUGIN_PATH . '/lang/' );
 				
 			if( is_admin() && isset( $_REQUEST['page'] ) && $_REQUEST['page'] == ESA_OPTIONS_PAGE ) {
+				/* Clean out the old method of storing Codex information */
+				if( false !== get_site_option( '_esa_capsCodexInfo' ) )
+					delete_site_option( '_esa_capsCodexInfo' );
+				
 				if( function_exists( 'wp_register_style' ) ) {
-					wp_register_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.css', __FILE__ ), array(), '0.6a', 'all' );
+					wp_register_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.min.css', __FILE__ ), array(), '0.7a', 'all' );
 				}
 				if( function_exists( 'wp_register_script' ) ) {
-					wp_register_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.js', __FILE__ ), array('jquery','post'), '0.6a', true );
+					wp_register_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.min.js', __FILE__ ), array('jquery','post'), '0.7a', true );
 				}
 				
 				if( version_compare( '3.0.9', $GLOBALS['wp_version'], '<' ) ) {
@@ -169,7 +175,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		 * Set the object's parameters
 		 * @param array the values to use to set the options
 		 */
-		function set_options( $values_to_use=NULL ) {
+		function set_options( $values_to_use=NULL, $force_update=false ) {
 			$options_set = false;
 			if( !empty( $values_to_use ) ) {
 				$options_set = true;
@@ -197,10 +203,17 @@ if( !class_exists( 'extended_super_admins' ) ) {
 						unset( $this->options['role_id'][$id], $this->options['role_name'][$id], $this->options['role_members'][$id], $this->options['role_caps'][$id] );
 					}
 				}
-				if( empty( $this->options ) ) {
+				if( empty( $this->options ) || false !== $force_update ) {
 					delete_site_option( ESA_OPTION_NAME );
-					add_site_option( ESA_OPTION_NAME, array() );
+					add_site_option( ESA_OPTION_NAME, ( empty( $this->options ) ? array() : $this->options ) );
 				}
+				
+				/*ob_start();
+				var_dump( $this->options );
+				$var_output = ob_get_contents();
+				ob_end_clean();
+				
+				print( '<p>' . __( sprintf( 'The current site is set to %d and the options look like:', $GLOBALS['site_id'] ), ESA_TEXT_DOMAIN ) . '</p><pre><code>' . $var_output . '</code></pre>' );*/
 			}
 			
 			if( empty( $this->options ) ) {
@@ -225,17 +238,18 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		
 		/**
 		 * Find out whether the WP Multi Network plugin is active
+		 * Added support for ra-networks.php in v0.7a
 		 */
 		function is_multi_network() {
 			if( isset( $this->is_multi_network ) )
 				return $this->is_multi_network;
 			
-			if( function_exists( 'wpmn_switch_to_network' ) || function_exists( 'switch_to_site' ) ) {
+			if( function_exists( 'wpmn_switch_to_network' ) || function_exists( 'switch_to_site' ) || function_exists( 'ra_network_page' ) ) {
 				$this->is_multi_network = true;
 				return $this->is_multi_network;
 			}
 				
-			if( !file_exists( WP_PLUGIN_DIR . '/wordpress-multi-network/wordpress-multi-network.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/wordpress-multi-network/wordpress-multi-network.php' ) && !file_exists( WP_PLUGIN_DIR . '/networks-for-wordpress/index.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/networks-for-wordpress/index.php' ) ) {
+			if( !file_exists( WP_PLUGIN_DIR . '/wordpress-multi-network/wordpress-multi-network.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/wordpress-multi-network.php' ) && !file_exists( WP_PLUGIN_DIR . '/networks-for-wordpress/index.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/networks-for-wordpress.php' ) && !file_exists( WP_PLUGIN_DIR . '/Networks-Plus/ra-networks.php' ) && !file_exists( WPMU_PLUGIN_DIR . '/ra-network.php' ) ) {
 				$this->is_multi_network = false;
 				return $this->is_multi_network;
 			}
@@ -243,7 +257,11 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			global $wpdb;
 			$plugins = $wpdb->get_results( $wpdb->prepare( "SELECT meta_value FROM " . $wpdb->sitemeta . " WHERE meta_key = 'active_sitewide_plugins'" ) );
 			foreach( $plugins as $plugin ) {
-				if( in_array( 'wordpress-multi-network/wordpress-multi-network.php', maybe_unserialize( $plugin->meta_value ) ) || in_array( 'networks-for-wordpress/index.php', maybe_unserialize( $plugin->meta_value ) ) ) {
+				if( 
+				   in_array( 'wordpress-multi-network/wordpress-multi-network.php', maybe_unserialize( $plugin->meta_value ) ) || 
+				   in_array( 'networks-for-wordpress/index.php', maybe_unserialize( $plugin->meta_value ) ) || 
+				   in_array( 'Networks-Plus/ra-networks.php', maybe_unserialize( $plugin->meta_value ) ) 
+				) {
 					$this->is_multi_network = true;
 					return $this->is_multi_network;
 				}
@@ -253,7 +271,11 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				$oldblog = $wpdb->set_blog_id( $site->blog_id );
 				$plugins = $wpdb->get_results( $wpdb->prepare( "SELECT option_value FROM " . $wpdb->options . " WHERE option_name = 'active_plugins'" ) );
 				foreach( $plugins as $plugin ) {
-					if( in_array( 'wordpress-multi-network/wordpress-multi-network.php', maybe_unserialize( $plugin->option_value ) ) || in_array( 'networks-for-wordpress/index.php', maybe_unserialize( $plugin->option_value ) ) ) {
+					if( 
+					   in_array( 'wordpress-multi-network/wordpress-multi-network.php', maybe_unserialize( $plugin->option_value ) ) || 
+					   in_array( 'networks-for-wordpress/index.php', maybe_unserialize( $plugin->option_value ) ) || 
+					   in_array( 'Networks-Plus/ra-networks.php', maybe_unserialize( $plugin->option_value ) ) 
+					) {
 						$this->is_multi_network = true;
 						return $this->is_multi_network;
 					}
@@ -341,7 +363,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		 */
 		function delete_settings() {
 			delete_site_option( ESA_OPTION_NAME );
-			return print('<div class="warning">The settings for this plugin have been deleted.</div>');
+			return print('<div class="warning"><p>' . __( 'The settings for this plugin have been deleted.', ESA_TEXT_DOMAIN ) . '</p></div>');
 		}
 		
 		/**
@@ -401,6 +423,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				wp_die( 'While trying to create a meta box for the new role, we found that the meta box function does not exist' );
 				$output .= $this->admin_options_section();
 			}
+			
 			if( !function_exists( 'add_meta_box' ) )
 				return $output;
 			else
@@ -413,14 +436,14 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			if( isset( $_POST['esa_options_action'] ) && wp_verify_nonce( $_POST['_wp_nonce'], 'esa_options_save' ) ) {
 				if( $this->save_options( $_POST ) ) {
 					if( version_compare( $wp_version, '3.0.9', '>' ) )
-						wp_redirect(network_admin_url('settings.php?page=esa_options_page&action-message=updated'));
+						wp_redirect( network_admin_url('settings.php?page=esa_options_page&action-message=updated') );
 					else
-						wp_redirect(admin_url('ms-admin.php?page=esa_options_page&action-message=updated'));
+						wp_redirect( admin_url('ms-admin.php?page=esa_options_page&action-message=updated') );
 				} else {
 					if( version_compare( $wp_version, '3.0.9', '>' ) )
-						wp_redirect(network_admin_url('settings.php?page=esa_options_page&action-message=failed'));
+						wp_redirect( network_admin_url('settings.php?page=esa_options_page&action-message=failed') );
 					else
-						wp_redirect(admin_url('ms-admin.php?page=esa_options_page&action-message=failed'));
+						wp_redirect( admin_url('ms-admin.php?page=esa_options_page&action-message=failed') );
 				}
 			} elseif( isset( $_POST['esa_options_action'] ) ) {
 				$this->debug .= '<div class="warning">';
@@ -445,6 +468,9 @@ if( !class_exists( 'extended_super_admins' ) ) {
 					return;
 				} elseif( $_REQUEST['options-action'] == 'remove_settings' ) {
 					return $this->delete_settings();
+				} elseif( $_REQUEST['options-action'] == 'flush-codex-cache' ) {
+					if( false !== $this->flush_codex_cache() )
+						echo '<div class="updated"><p>' . __( 'The codex information was flushed and repopulated.', ESA_TEXT_DOMAIN ) . '</p></div>';
 				}
 			}
 			
@@ -455,9 +481,9 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		<h2>' . __( 'Extended Super Admin Settings', ESA_TEXT_DOMAIN ) . '</h2>';
 			if( isset( $_REQUEST['action-message'] ) ) {
 				if( $_REQUEST['action-message'] == 'updated' )
-					$output .= '<div class="updated">' . __( 'The options for this plugin were updated successfully.' ) . '</div>';
+					$output .= '<div class="updated"><p>' . __( 'The options for this plugin were updated successfully.' ) . '</p></div>';
 				else
-					$output .= '<div class="error">' . __( 'There was an error updating the options for this plugin.' ) . '</div>';
+					$output .= '<div class="error"><p>' . __( 'There was an error updating the options for this plugin.' ) . '</p></div>';
 			}
 			$output .= '
 		<div id="poststuff" class="metabox-holder">
@@ -487,13 +513,19 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			} else {
 				echo $output;
 			}
-
-			$output = '
+			
+			$output = '';
+			if( is_array( $this->caps_descriptions ) )
+				$output .= '<div id="caps_container">' . implode( "\n", $this->caps_descriptions ) . '</div>';
+			$output .= '
 			<p class="submit">
 	        	<input type="submit" class="button-primary" value="' . __('Save', ESA_TEXT_DOMAIN) . '"/>
 			</p>
 			<input type="hidden" name="esa_options_action" value="save"/>
-		</form>';
+		</form>
+		<p>
+			<a href="' . network_admin_url( 'settings.php?page=' . $_REQUEST['page'] . '&options-action=flush-codex-cache' ) . '" class="button">' . __( 'Flush the Cache of Codex Info', ESA_TEXT_DOMAIN ) . '</a>
+		</p>';
 			$output .= '
 				</div><!-- #post-body-content -->
 			</div><!-- #post-body -->
@@ -627,18 +659,13 @@ if( !class_exists( 'extended_super_admins' ) ) {
 								<input type="checkbox" name="role_caps[' . $id . '][' . $cap . ']" id="role_caps_' . $id . '_' . $cap . '" value="on"' . checked( $this->role_caps[$id][$cap], 'on', false ) . '/>';
 				$output .= '
 								<label for="role_caps_' . $id . '_' . $cap . '">' . $cap . '</label>';
-				if( !function_exists( 'findCap' ) )
+				if( !function_exists( 'getCodexCapabilities' ) )
 					require_once( 'inc/retrieve-capabilities-info.php' );
 				
-				if( $caps_info = findCap( $cap, $this->caps_descriptions ) ) {
-					$output .= '
-								<div class="caps_info">';
-					$this->caps_descriptions[$cap] = $caps_info;
-					$output .= $this->caps_descriptions[$cap];
-					$output .= '
-								</div>';
-				} else {
-					$this->caps_descriptions[$cap] = false;
+				$this->caps_descriptions = array_merge( $this->caps_descriptions, getCodexCapabilities() );
+				
+				if( !empty( $this->caps_descriptions ) && array_key_exists( $cap, $this->caps_descriptions ) ) {
+					$output .= ' <span class="caps_info_hover" id="caps_info_hover_' . $id . '_' . $cap . '">(?)</span>';
 				}
 				$output .= '
 							</div>';
@@ -731,6 +758,10 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				/*$menu_slug = */ESA_OPTIONS_PAGE, 
 				/*$function = */array($this, 'admin_options_page')
 			);
+		}
+		
+		function flush_codex_cache() {
+			return delete_site_transient( '_esa_capsCodexInfo' );
 		}
 	}
 }

@@ -1,3 +1,9 @@
+/**
+ * Extended Super Admins
+ * Admin style definitions
+ * @version 0.7a
+ */
+
 .esa-options-table {
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
@@ -42,7 +48,7 @@
 .esa-options-table div.checkbox-container:hover {
 	background: #eee;
 }
-div.caps_info {
+#caps_container {
 	padding: 0;
 	margin: 0;
 	min-width: 250px;
@@ -73,10 +79,12 @@ div.esa-modal-background {
 	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000,endColorstr=#99000000); /*AARRGGBB*/
 	background: rgba( 0, 0, 0, .6 );
 }
-.caps_info h3 {
-	margin: 0;
-	background: #e2e2e2;
+._role_caps h3 {
 	padding: .5em;
+	margin: 0;
+	text-align: center;
+	background: #e2e2e2;
+	text-align: center;
 	border-radius: 5px 5px 0 0;
 	-webkit-border-radius: 5px 5px 0 0;
 	-moz-border-radius: 5px 5px 0 0;
@@ -84,11 +92,35 @@ div.esa-modal-background {
 	-webkit-box-shadow: 0 3px 3px rgba( 0, 0, 0, .6 );
 	-moz-box-shadow: 0 3px 3px rgba( 0, 0, 0, .6 );
 }
-.esa-dlg-inner {
-	padding: .5em;
+._role_caps {
+	padding: 0;
+	position: absolute;
+	width: auto;
+	min-width: 250px;
+	min-height: 100px;
+	max-width: 500px;
+	max-height: 400px;
+	background: #fff;
+	border-radius: 0 0 5px 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	box-shadow: 0 3px 3px rgba( 0, 0, 0, .6 );
+	-webkit-box-shadow: 0 3px 3px rgba( 0, 0, 0, .6 );
+	-moz-box-shadow: 0 3px 3px rgba( 0, 0, 0, .6 );
+}
+._single_cap {
 	margin: .5em;
+	padding: 1em .5em .5em;
+	margin-top: 0;
+	overflow-y: auto;
+}
+._single_cap ul>li {
+	margin-left: 1.5em;
+	display: list-item;
+	list-style: disc;
 }
 .esa-close-dlg {
+	font-weight: normal;
 	position: absolute;
 	top: .5em;
 	right: .5em;

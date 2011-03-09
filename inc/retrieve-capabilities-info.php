@@ -15,66 +15,157 @@
  * we return the information as we have it stored in the local database. If not, we add that
  * information to the local database and return it directly from the Codex.
  *
+ * Completely rewritten in 0.7a
+ *
  * @since 0.4a
  * @uses WP_Http::request()
  * @uses maybe_unserialize
- * @uses get_site_option()
- * @uses add_site_option()
+ * @uses get_site_transient()
+ * @uses add_site_transient()
  * @return string the raw Wiki information from the Codex
  */
 function getCodexCapabilities() {
-	if( ( $capsInfo = get_site_option( '_esa_capsCodexInfo', false, true ) ) !== false ) {
-		if( $capsInfo['time_retrieved'] >= ( time() - ( 7 * 24 * 60 * 60 ) ) ) {
-			return $capsInfo['pageContent'];
-		}
-	}
+	$capsInfo = maybe_unserialize( get_site_transient( '_esa_capsCodexInfo' ) );
+	if( !empty( $capsInfo ) )
+		return maybe_unserialize( $capsInfo['pageContent'] );
+		/*die( var_dump( $capsInfo['pageContent'] ) );*/
+	
 	if( !class_exists( 'WP_Http' ) )
 		require_once( ABSPATH . '/wp-includes/class-http.php' );
 	
+	/*$revInfo = new WP_Http();
+	$revInfo = maybe_unserialize( $revInfo->request( str_replace( 'rvprop=content|', 'rvprop=', ESA_CODEX_PAGE ) ) );
+	$revInfo = maybe_unserialize( $revInfo['body'] );
+	$revInfo = maybe_unserialize( $revInfo['query'] );
+	$revInfo = maybe_unserialize( $revInfo['pages'] );
+	$revInfo = array_shift( $revInfo );
+	$revInfo = $revInfo['revisions'][0];
+	$revInfo = $revInfo['timestamp'];*/
+	/*if( is_array( $capsInfo ) && $capsInfo['time_retrieved'] >= $revInfo ) {
+		$capsInfo['time_retrieved'] = time();
+		add_site_option( '_esa_capsCodexInfo', $capsInfo );
+		unset( $revInfo );
+		return $capsInfo['pageContent'];
+	}*/
+	/*$capsInfo = maybe_unserialize( $capsInfo->request( 'http://codex.wordpress.org/api.php?action=query&prop=revisions&meta=siteinfo&titles=Roles_and_Capabilities&rvprop=content|timestamp&format=php' ) );*/
 	$capsInfo = new WP_Http();
-	$capsInfo = maybe_unserialize( $capsInfo->request( 'http://codex.wordpress.org/api.php?action=query&prop=revisions&meta=siteinfo&titles=Roles_and_Capabilities&rvprop=content|timestamp&format=php' ) );
-	if( $capsInfo['response']['code'] != 200 ) {
+	$capsInfo = maybe_unserialize( $capsInfo->request( ESA_CODEX_PAGE . ESA_CODEX_QUERY ) );
+	if( is_a( $capsInfo, 'WP_Error' ) )
+		wp_die( '<p>' . __( 'While attempting to retrieve the capabilities information from the Codex, we encountered the following error:', ESA_TEXT_DOMAIN ) . '</p>' . $capsInfo->get_error_message() );
+	/*if( $capsInfo['response']['code'] != 200 ) {
 		if( ( $capsInfo = get_site_option( '_esa_capsCodexInfo', false, true ) ) !== false )
 			return $capsInfo['pageContent'];
 		else
 			return false;
-	}
+	}*/
 	$tmp = maybe_unserialize( $capsInfo['body'] );
 	$tmp = maybe_unserialize( $tmp['query'] );
 	$tmp = maybe_unserialize( $tmp['pages'] );
 	$tmp = array_shift( $tmp );
 	$tmp = $tmp['revisions'][0];
 	$capsInfo = array( 'time_retrieved' => time(), 'revision_time' => strtotime( $tmp['timestamp'] ), 'pageContent' => $tmp['*'] );
-	add_site_option( '_esa_capsCodexInfo', $capsInfo );
+	$revInfo = new WP_Http();
+	$pageContent = urlencode( $capsInfo['pageContent'] );
+	$pageContent = explode( '%0A%0A', $pageContent );
+	while( count( $pageContent ) ) {
+		$tmpContent = '';
+		while( strlen( $tmpContent ) < 1000 ) {
+			if( empty( $pageContent ) )
+				continue 2;
+			$tmpContent .= array_shift( $pageContent ) . '%0A%0A';
+		}
+		$page[] = maybe_unserialize( $revInfo->request( ESA_CODEX_PAGE . ESA_CODEX_PARSE_QUERY . $tmpContent ) );
+	}
+	$page[] = maybe_unserialize( $revInfo->request( ESA_CODEX_PAGE . ESA_CODEX_PARSE_QUERY . $tmpContent ) );
+	$content = '';
+	foreach( $page as $p ) {
+		if( !is_a( $p, 'WP_Error' ) ) {
+			$page_info = maybe_unserialize( $p['body'] );
+			$page_info = maybe_unserialize( $page_info['parse'] );
+			$page_info = maybe_unserialize( $page_info['text'] );
+			$page_info = maybe_unserialize( $page_info['*'] );
+			
+			$page_info = preg_replace( '#<table id="toc" class="toc".+</script>#s', '', $page_info );
+			$page_info = preg_replace( '/<!--.+-->/s', '', $page_info );
+			$page_info = preg_replace( '#<p><br />\s+</p>#s', '', $page_info );
+			$page_info = preg_replace( '#<a name="([^"]+)" id="([^"]+)"></a><h3>#s', '<h3 id="$2">', $page_info );
+			$page_info = preg_replace( '#<h2>.+</h2>#s', '', $page_info );
+			$page_info = preg_replace( '/href="#([^"]+)"/', 'http://codex.wordpress.org/Roles_and_Capabilities/#$1', $page_info );
+			$page_info = preg_replace( '#href="(?!http://)#', 'href="http://codex.wordpress.org$1', $page_info );
+			/*$content_start = ( strpos( $page_info, '</script>' ) + strlen( '</script>' ) );
+			$content_end = strpos( $page_info, '<!--' );
+			$content .= "\n" . 'Content start: ' . $content_start . "\n" . 'Content end: ' . $content_end . "\n" . 'Content length: ' . strlen( $page_info ) . "\n";
+			$content .= substr( $page_info, $content_start, ( $content_end - $content_start ) );*/
+			$content .= $page_info;
+		} else {
+			$content .= $p->get_error_message();
+		}
+	}
+	$content = explode( '<h3 id="', $content );
+	
+	$content_array = array();
+	foreach( $content as $c ) {
+		$idpos = strpos( $c, '">' );
+		$id = substr( $c, 0, $idpos );
+		$c = str_replace( $id . '"> <span class="mw-headline">' . $id . '</span></h3>', '', $c );
+		if( !empty( $id ) )
+			$content_array[$id] = '<div id="_role_caps_' . $id . '" class="_role_caps"><h3>' . $id . '</h3><div class="_single_cap">' . trim( $c ) . '</div></div>';
+	}
+	$capsInfo['pageContent'] = $content_array;
+	/*die( '<pre><code>' . htmlentities( $content ) . '</code></pre>' );*/
+	set_site_transient( '_esa_capsCodexInfo', $capsInfo, 30 * 24 * 60 * 60 );
 	return $capsInfo['pageContent'];
 }
 
 /**
- * Locates the specific capability information
- *
- * Parses the Roles and Capabilities information that was retrieved from the codex, and 
- * finds the specific capability to be returned.
- * Returns a semi-parsed version of the information
- * @since 0.4a
+ * Determines whether or not the capability is included in the codex info
+ * @since 0.7a
  * @param string $cap the name of the cap to look for
  * @param array $caps_descriptions an array containing the items that have already been located
- * @param bool $include_titles whether or not to include the heading in the returned string
- * @uses parseWiki()
+ * @param bool $include_titles deprecated
  * @uses getCodexCapabilities()
- * @return string the semi-parsed Wiki information from the Codex
+ * @return bool whether or not the cap is in the codex info
  */
-function findCap( $cap, $caps_descriptions=array(), $include_titles=false ) {
+function findCap( $cap, $caps_descriptions=array(), &$capsPage=NULL ) {
 	if( array_key_exists( $cap, $caps_descriptions ) )
-		return $caps_descriptions[$cap];
+		return $caps_description[$cap];
 	
-	$capsPage = getCodexCapabilities();
-	if( !strstr( $capsPage, '===' . $cap . '===' ) )
-		return false;
-	
-	$startPos = strpos( $capsPage, '===' . $cap . '===' );
-	$endPos = strpos( $capsPage, '==', ( $startPos + strlen( '===' . $cap . '===' ) ) );
-	$capsInfo = substr( $capsPage, ( $startPos + strlen( '===' . $cap . '===' ) ), ( $endPos - ( $startPos + strlen( '===' . $cap . '===' ) ) ) );
-	return '' . ( ( $include_titles ) ? '<h3>' . $cap . '</h3>' : '' ) . parseWiki( $capsInfo );
+	$capsPage = ( empty( $capsPage ) ) ? getCodexCapabilities() : $capsPage;
+	return strstr( $capsPage, 'id="' . $cap . '"' );
+}
+
+if( !function_exists( 'findCap' ) ) {
+	/**
+	 * Locates the specific capability information
+	 *
+	 * Parses the Roles and Capabilities information that was retrieved from the codex, and 
+	 * finds the specific capability to be returned.
+	 * Returns a semi-parsed version of the information
+	 * @since 0.4a
+	 * @param string $cap the name of the cap to look for
+	 * @param array $caps_descriptions an array containing the items that have already been located
+	 * @param bool $include_titles whether or not to include the heading in the returned string
+	 * @uses parseWiki()
+	 * @uses getCodexCapabilities()
+	 * @return string the semi-parsed Wiki information from the Codex
+	 */
+	function findCap( $cap, $caps_descriptions=array(), $include_titles=false ) {
+		$searchstr = '<h3> <span class="mw-headline">' . $cap . '</span></h3>';
+		if( array_key_exists( $cap, $caps_descriptions ) )
+			return $caps_descriptions[$cap];
+		
+		$capsPage = getCodexCapabilities();
+		if( !strstr( $capsPage, $searchstr ) )
+			return false;
+		
+		$startPos = strpos( $capsPage, $searchstr );
+		$endPos = strpos( $capsPage, '<a name="', ( $startPos + strlen( $searchstr ) ) );
+		if( empty( $endPos ) )
+			$capsInfo = substr( $capsPage, ( $startPos + strlen( $searchstr ) ) );
+		else
+			$capsInfo = substr( $capsPage, ( $startPos + strlen( $searchstr ) ), ( $endPos - ( $startPos + strlen( $searchstr ) ) ) );
+		return '' . ( $include_titles ? '<h3>' . $cap . '</h3>' : '' ) . $capsInfo;
+	}
 }
 
 /**

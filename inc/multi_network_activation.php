@@ -30,9 +30,22 @@ if( !class_exists( 'wpmn_super_admins' ) ) {
 $wpmn_super_admins_obj = new wpmn_super_admins;
 
 if( $_GET['options-action'] == 'multi_network_activate' ) {
+	$main_site_id = $wpdb->siteid;
+	
 	$networks = $wpdb->get_results( $wpdb->prepare( 'SELECT DISTINCT id FROM ' . $wpdb->site ) );
+	
 	if( count( $networks ) ) {
+		$GLOBALS['esa_options'] = maybe_unserialize( get_site_option( ESA_OPTION_NAME, array(), false ) );
+		$GLOBALS['force_esa_options_update'] = true;
+		
 		foreach( $networks as $network ) {
+			if( $main_site_id == $network->id ) {
+				print( '<p>' . __( sprintf( 'We skipped over the network with an ID of %d, because the plugin already appears to be network active on that site.', $network->id ), ESA_TEXT_DOMAIN ) . '</p>' );
+				continue;
+			}
+			
+			$output = '';
+			
 			$opts_updated = false;
 			$wpmn_super_admins_obj->switch_to_site( $network->id );
 			if( current_user_can( 'manage_esa_options' ) ) {
@@ -48,26 +61,26 @@ if( $_GET['options-action'] == 'multi_network_activate' ) {
 						$wpmn_super_admins_obj = new wpmn_super_admins();
 						$opts_updated = true;
 					} else {
-						$wpmn_super_admins_obj->set_options();
+						$wpmn_super_admins_obj->set_options( $GLOBALS['esa_options'], $GLOBALS['force_esa_options_update'] );
 						$opts_updated = true;
 					}
 					if( $opts_updated ) {
-						echo '<p>';
-						printf( __( 'The Extended Super Admins options were successfully updated for the network with an ID of %d, as well.', ESA_TEXT_DOMAIN ), $network->id );
-						echo '</p>';
+						$output .= '<p>' . sprintf( __( 'The Extended Super Admins options were successfully updated for the network with an ID of %d, as well.', ESA_TEXT_DOMAIN ), $network->id ) . '</p>';
 					}
-					echo '<p>' . __( 'The Extended Super Admins plug-in was successfully network-activated on the network with an ID of ', ESA_TEXT_DOMAIN ) . $network->id . '</p>';
+					$output = '<p>' . __( 'The Extended Super Admins plug-in was successfully network-activated on the network with an ID of ', ESA_TEXT_DOMAIN ) . $network->id . '</p>' . $output;
 				} else {
-					echo '<p>';
-					printf( __( 'The Extended Super Admins plug-in was already network-active on the network with an ID of %d, therefore, no changes were made.', ESA_TEXT_DOMAIN ), $network->id );
-					echo '</p>';
+					$output .= '<p>' . sprintf( __( 'The Extended Super Admins plug-in was already network-active on the network with an ID of %d, therefore, no changes were made.', ESA_TEXT_DOMAIN ), $network->id ) . '</p>';
 				}
+				
+				echo $output;
 			} else {
 				echo '<p>' . __( 'You do not have the appropriate permissions to network activate this plug-in on the network with an ID of ', ESA_TEXT_DOMAIN ) . $network->id . '</p>';
 			}
 			$wpmn_super_admins_obj->restore_current_site();
 		}
 		echo '</div>';
+		
+		unset( $GLOBALS['esa_options'], $GLOBALS['force_esa_options_update'] );
 	} else {
 		echo '<p>' . __( 'Multiple networks could not be found, therefore, no additional changes were made.', ESA_TEXT_DOMAIN ) . '</p>';
 		echo '</div>';

@@ -4,7 +4,7 @@
  * @package WordPress
  * @subpackage ExtendedSuperAdmins
  * @since 0.1a
- * @version 0.6a
+ * @version 0.7a
  */
 
 if( !class_exists( 'extended_super_admins' ) )
@@ -219,8 +219,14 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			return print('<div class="warning">The settings for this plugin have been deleted.</div>');
 		}
 		
+		/**
+		 * Determine how to best switch networks
+		 * @param int $site_id the ID of the network to which to switch
+		 * @uses wpmn_super_admins::switch_to_network()
+		 * @since 0.4a
+		 */
 		function switch_to_site( $site_id ) {
-			if( function_exists( 'wpmn_switch_to_network' ) ) {
+			/*if( function_exists( 'wpmn_switch_to_network' ) ) {
 				return wpmn_switch_to_network( $site_id );
 			} elseif( function_exists( 'switch_to_site' ) ) {
 				if( empty( $GLOBALS['sites'] ) ) {
@@ -228,18 +234,69 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 					$GLOBALS['sites'] = $wpdb->get_results('SELECT * FROM ' . $wpdb->site);
 				}
 				return switch_to_site( $site_id );
-			} else {
-				wp_die( 'A function to switch between networks could not be found' );
-				return false;
-			}
+			}*/
+			
+			$this->switch_to_network( $site_id );
+			
+			return true;
 		}
+		/**
+		 * Perform the actual network switch
+		 * @param int $new_site_id the ID of the network to which to switch
+		 * @uses $GLOBALS['wpdb']
+		 * @uses $GLOBALS['previous_site']
+		 * @uses $GLOBALS['current_site']
+		 * @uses get_current_site()
+		 * @since 0.7a
+		 */
+		function switch_to_network( $new_site_id ) {
+			global $wpdb;
+			$site_info = $wpdb->get_results( $wpdb->prepare( "SELECT site_id, blog_id FROM $wpdb->blogs GROUP BY site_id" ) );
+			if( empty( $site_info ) )
+				return false;
+			
+			foreach( $site_info as $s ) {
+				if( $new_site_id == $s->site_id )
+					$new_blog_id = $s->blog_id;
+			}
+			if( empty( $new_blog_id ) )
+				return false;
+			
+			$GLOBALS['previous_site']->site_id = $GLOBALS['site_id'];
+			$GLOBALS['previous_site']->blog_id = $wpdb->set_blog_id( $new_blog_id, $new_site_id );
+			$GLOBALS['current_site'] = get_current_site();
+			return true;
+		}
+		
+		/**
+		 * Determine how to best switch back to original network
+		 * @uses wpmn_super_admins::restore_current_network()
+		 * @since 0.4a
+		 */
 		function restore_current_site() {
-			if( function_exists( 'wpmn_restore_current_network' ) )
+			/*if( function_exists( 'wpmn_restore_current_network' ) )
 				return wpmn_restore_current_network();
 			elseif( function_exists( 'restore_current_site' ) )
-				return restore_current_site();
-			else
+				return restore_current_site();*/
+			
+			$this->restore_current_network();
+			return true;
+		}
+		/**
+		 * Perform the actual network switch
+		 * @uses $GLOBALS['wpdb']
+		 * @uses $GLOBALS['previous_site']
+		 * @uses $GLOBALS['current_site']
+		 * @uses get_current_site()
+		 * @since 0.7a
+		 */
+		function restore_current_network() {
+			if( !isset( $GLOBALS['previous_site'] ) || empty( $GLOBALS['previous_site'] ) )
 				return false;
+			
+			global $wpdb;
+			$wpdb->set_blog_id( $GLOBALS['previous_site']->blog_id, $GLOBALS['previous_site']->site_id );
+			$GLOBALS['current_site'] = get_current_site();
 		}
 		
 	}

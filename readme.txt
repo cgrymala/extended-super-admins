@@ -3,7 +3,7 @@ Contributors: cgrymala
 Donate link: http://www.umw.edu/gift/make_a_gift/default.php
 Tags: wpmu, multisite, super admins, site admin, role manager, capabilities, wpmn
 Requires at least: 3.0
-Tested up to: 3.1-RC3
+Tested up to: 3.1
 Stable tag: 0.6a
 
 This plugin allows you to create multiple levels of Super Admins in a multi-site configuration.
@@ -78,6 +78,13 @@ This plugin creates a new capability called "manage_esa_options". If you do not 
 3. The way the admin area looks while modifying an existing role. In this shot, an example of the Codex information is being displayed.
 
 == Changelog ==
+= 0.7a =
+* Added multi-network support for [Networks+ plugin](http://wpebooks.com/networks/)
+* Wrote custom function to switch networks in a multi-network setup
+* Optimized the way Codex information is retrieved, stored and displayed
+* Further optimized JavaScript
+* Minified JavaScript and CSS files used in the plugin (non-minified source files are still included in the package)
+
 = 0.6a =
 * The JavaScript for this plugin has been optimized quite a bit
 * The admin options page now utilizes the standard WordPress meta box interface rather than using a custom interface (thanks to [RavanH](http://profiles.wordpress.org/users/RavanH/) for the suggestion)
