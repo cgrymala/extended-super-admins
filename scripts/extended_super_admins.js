@@ -19,27 +19,28 @@ jQuery( function( $ ) {
 		.css({'cursor':'pointer'})
 		.each( 
 			function() {
-			  	var myID = $(this).attr('id');
-				var myClass = myID.replace(/caps_info_hover_(\d+)_/,'_role_caps_');
+				var myID, myClass;
+			  	myID = $(this).attr('id');
+				myClass = myID.replace(/caps_info_hover_(\d+)_/,'_role_caps_');
 				myID = myID.replace(/caps_info_hover_(\d+)_/,'_role_caps_');
 				if( !( myID in cap_description_dialogs ) ) {
 					$( '#' + myID ).appendTo('#esa-modal-bg');
 					cap_description_dialogs[myID] = $( '#' + myID );
-					console.log( cap_description_dialogs[myID] );
 				}
 			}
 		)
 		.click( 
 			function() { 
-			  	var myID = $(this).attr('id');
+				var myID, winWid, winHt, dlgWid, dlgHt;
+			  	myID = $(this).attr('id');
 				myID = myID.replace(/caps_info_hover_(\d+)_/,'_role_caps_');
-				var winWid = $(window).width();
-				var winHt = $(window).height();
+				winWid = $(window).width();
+				winHt = $(window).height();
 				$( '#esa-modal-bg' ).css({'width':winWid + 'px', 'height':winHt + 'px' }).show();
 				cap_description_dialogs[myID].show();
 				
-				var dlgWid = cap_description_dialogs[myID].innerWidth();
-				var dlgHt = cap_description_dialogs[myID].innerHeight();
+				dlgWid = cap_description_dialogs[myID].innerWidth();
+				dlgHt = cap_description_dialogs[myID].innerHeight();
 				cap_description_dialogs[myID].css( { 'left':((winWid - dlgWid) / 2) + 'px', 'top':((winHt - dlgHt) / 2) + 'px' }).click( function(e) { e.stopPropagation(); return true; } );
 			}
 		);
