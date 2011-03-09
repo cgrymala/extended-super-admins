@@ -84,6 +84,8 @@ This plugin creates a new capability called "manage_esa_options". If you do not 
 * Optimized the way Codex information is retrieved, stored and displayed
 * Further optimized JavaScript
 * Minified JavaScript and CSS files used in the plugin (non-minified source files are still included in the package)
+* Added ability to manually flush the Codex information
+* Extended length of Codex cache from 7 days to 30 days
 
 = 0.6a =
 * The JavaScript for this plugin has been optimized quite a bit
