@@ -94,7 +94,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			if( function_exists( 'load_plugin_textdomain' ) )
 				load_plugin_textdomain( ESA_TEXT_DOMAIN, false, ESA_PLUGIN_PATH . '/lang/' );
 				
-			if( is_admin() && isset( $_REQUEST['page'] ) && $_REQUEST['page'] == ESA_OPTIONS_PAGE ) {
+			if( is_admin() && isset( $_REQUEST['page'] ) && ESA_OPTIONS_PAGE == $_REQUEST['page'] ) {
 				/* Clean out the old method of storing Codex information */
 				if( false !== get_site_option( '_esa_capsCodexInfo' ) )
 					delete_site_option( '_esa_capsCodexInfo' );
@@ -119,7 +119,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		}
 		
 		function _admin_init() {
-			if( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == ESA_OPTIONS_PAGE ) {
+			if( isset( $_REQUEST['page'] ) && ESA_OPTIONS_PAGE == $_REQUEST['page'] ) {
 				if( function_exists( 'wp_enqueue_script' ) ) {
 					wp_enqueue_script( 'esa_admin_scripts' );
 				}
@@ -199,7 +199,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 						}
 					}
 					
-					if( ( empty( $this->options['role_name'][$id] ) && empty( $this->options['role_members'][$id] ) && empty( $this->options['role_caps'][$id] ) ) || ( isset($values_to_use['delete_role'][$id] ) && $values_to_use['delete_role'][$id] == 'on' ) ) {
+					if( ( empty( $this->options['role_name'][$id] ) && empty( $this->options['role_members'][$id] ) && empty( $this->options['role_caps'][$id] ) ) || ( isset($values_to_use['delete_role'][$id] ) && 'on' == $values_to_use['delete_role'][$id] ) ) {
 						unset( $this->options['role_id'][$id], $this->options['role_name'][$id], $this->options['role_members'][$id], $this->options['role_caps'][$id] );
 					}
 				}
@@ -370,11 +370,11 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		 * Perform the action of revoking specific privileges from the current user
 		 */
 		function revoke_privileges( $caps, $cap, $user_id, $args ) {
-			if( $cap == 'manage_esa_options' )
+			if( 'manage_esa_options' == $cap )
 				$this->perms_checked = true;
 				
 			if( !is_super_admin() ) {
-				if( $cap == 'manage_esa_options' )
+				if( 'manage_esa_options' == $cap )
 					return array_merge( $caps, array( 'do_not_allow' ) );
 				
 				return $caps;
@@ -466,9 +466,9 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				if( stristr( $_REQUEST['options-action'], 'multi_network_' ) ) {
 					require_once( ESA_ABS_DIR . '/inc/multi_network_activation.php' );
 					return;
-				} elseif( $_REQUEST['options-action'] == 'remove_settings' ) {
+				} elseif( 'remove_settings' == $_REQUEST['options-action']) {
 					return $this->delete_settings();
-				} elseif( $_REQUEST['options-action'] == 'flush-codex-cache' ) {
+				} elseif( 'flush-codex-cache' == $_REQUEST['options-action'] ) {
 					if( false !== $this->flush_codex_cache() )
 						echo '<div class="updated"><p>' . __( 'The codex information was flushed and repopulated.', ESA_TEXT_DOMAIN ) . '</p></div>';
 				}
@@ -480,7 +480,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			$output .= '
 		<h2>' . __( 'Extended Super Admin Settings', ESA_TEXT_DOMAIN ) . '</h2>';
 			if( isset( $_REQUEST['action-message'] ) ) {
-				if( $_REQUEST['action-message'] == 'updated' )
+				if( 'updated' == $_REQUEST['action-message'] )
 					$output .= '<div class="updated"><p>' . __( 'The options for this plugin were updated successfully.' ) . '</p></div>';
 				else
 					$output .= '<div class="error"><p>' . __( 'There was an error updating the options for this plugin.' ) . '</p></div>';

@@ -29,7 +29,7 @@ if( !class_exists( 'wpmn_super_admins' ) ) {
 }
 $wpmn_super_admins_obj = new wpmn_super_admins;
 
-if( $_GET['options-action'] == 'multi_network_activate' ) {
+if( 'multi_network_activate' == $_GET['options-action'] ) {
 	$main_site_id = $wpdb->siteid;
 	
 	$networks = $wpdb->get_results( $wpdb->prepare( 'SELECT DISTINCT id FROM ' . $wpdb->site ) );
@@ -85,7 +85,7 @@ if( $_GET['options-action'] == 'multi_network_activate' ) {
 		echo '<p>' . __( 'Multiple networks could not be found, therefore, no additional changes were made.', ESA_TEXT_DOMAIN ) . '</p>';
 		echo '</div>';
 	}
-} elseif( $_GET['options-action'] == 'multi_network_deactivate' ) {
+} elseif( 'multi_network_deactivate' == $_GET['options-action'] ) {
 	$networks = $wpdb->get_results( $wpdb->prepare( 'SELECT DISTINCT id FROM ' . $wpdb->site ) );
 	if( count( $networks ) ) {
 		foreach( $networks as $network ) {

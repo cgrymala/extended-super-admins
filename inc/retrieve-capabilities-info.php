@@ -206,7 +206,7 @@ function parseWiki( $content ) {
 	   get here. */
 	$capsInfo = new WP_Http;
 	$tmp = $capsInfo->request( 'http://codex.wordpress.org/api.php?action=parse&format=php&text=' . urlencode($content) );
-	if( $tmp['response']['code'] == 200 ) {
+	if( 200 == $tmp['response']['code'] ) {
 		$tmp = maybe_unserialize( $tmp['body'] );
 		$tmp = maybe_unserialize( $tmp['parse'] );
 		$tmp = maybe_unserialize( $tmp['text'] );
