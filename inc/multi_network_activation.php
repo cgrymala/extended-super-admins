@@ -17,13 +17,6 @@ echo '
 	<div class="wrap">
 		<h2>' . __('Extended Super Admins - Multi-Network Activation') . '</h2>';
 
-if( !function_exists( 'wpmn_network_exists' ) && !class_exists( 'njsl_Networks' ) ) {
-	if( file_exists( WP_PLUGIN_DIR . '/wp-multi-network/wp-multi-network.php' ) ) {
-		require( WP_PLUGIN_DIR . '/wp-multi-network/wp-multi-network.php' );
-	} elseif( file_exists( WP_PLUGIN_DIR . '/networks-for-wordpress/index.php' ) ) {
-		require( WP_PLUGIN_DIR . '/networks-for-wordpress/index.php' );
-	}
-}
 if( !class_exists( 'wpmn_super_admins' ) ) {
 	require( ESA_ABS_DIR . '/' . 'class-wpmn_super_admins.php' );
 }
