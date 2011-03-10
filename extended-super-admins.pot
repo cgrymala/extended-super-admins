@@ -1,0 +1,176 @@
+# Copyright (C) 2010 
+# This file is distributed under the same license as the  package.
+msgid ""
+msgstr ""
+"Project-Id-Version:  \n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/extended-super-admins\n"
+"POT-Creation-Date: 2011-03-10 13:47:55+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: inc/retrieve-capabilities-info.php:54
+msgid ""
+"While attempting to retrieve the capabilities information from the Codex, we "
+"encountered the following error:"
+msgstr ""
+
+#: inc/multi_network_activation.php:18
+msgid "Extended Super Admins - Multi-Network Activation"
+msgstr ""
+
+#: inc/multi_network_activation.php:68
+msgid ""
+"The Extended Super Admins options were successfully updated for the network "
+"with an ID of %d, as well."
+msgstr ""
+
+#: inc/multi_network_activation.php:70
+msgid ""
+"The Extended Super Admins plug-in was successfully network-activated on the "
+"network with an ID of "
+msgstr ""
+
+#: inc/multi_network_activation.php:72
+msgid ""
+"The Extended Super Admins plug-in was already network-active on the network "
+"with an ID of %d, therefore, no changes were made."
+msgstr ""
+
+#: inc/multi_network_activation.php:77
+msgid ""
+"You do not have the appropriate permissions to network activate this plug-in "
+"on the network with an ID of "
+msgstr ""
+
+#: inc/multi_network_activation.php:85 inc/multi_network_activation.php:116
+msgid ""
+"Multiple networks could not be found, therefore, no additional changes were "
+"made."
+msgstr ""
+
+#: inc/multi_network_activation.php:103
+msgid ""
+"The Extended Super Admins plug-in was successfully deactivated for the "
+"network with an ID of "
+msgstr ""
+
+#: inc/multi_network_activation.php:106
+msgid ""
+"The Extended Super Admins plug-in was not network-active on the network with "
+"an ID of %d, therefore, no changes were made."
+msgstr ""
+
+#: inc/multi_network_activation.php:110
+msgid ""
+"You do not have the appropriate permissions to network deactivate this plug-"
+"in on the network with an ID of "
+msgstr ""
+
+#: class-extended_super_admins.php:143
+msgid "Settings"
+msgstr ""
+
+#: class-extended_super_admins.php:147
+msgid "Delete Settings"
+msgstr ""
+
+#: class-extended_super_admins.php:192
+msgid ""
+"One of the roles you attempted to create did not have a name. Therefore it "
+"was not saved. Please try again."
+msgstr ""
+
+#: class-extended_super_admins.php:317 class-wpmn_super_admins.php:159
+msgid ""
+"The form to save the Extended Super Admin options was submitted, but the "
+"values were empty. Therefore, nothing was updated."
+msgstr ""
+
+#: class-extended_super_admins.php:327 class-wpmn_super_admins.php:183
+msgid "The options for the Extended Super Admins plugin have been updated."
+msgstr ""
+
+#: class-extended_super_admins.php:331 class-wpmn_super_admins.php:193
+msgid "There was an error committing the changes to the database."
+msgstr ""
+
+#: class-extended_super_admins.php:366
+msgid "The settings for this plugin have been deleted."
+msgstr ""
+
+#: class-extended_super_admins.php:421
+msgid "Add a New Role"
+msgstr ""
+
+#: class-extended_super_admins.php:450
+msgid "The nonce for these options could not be verified."
+msgstr ""
+
+#: class-extended_super_admins.php:459 class-extended_super_admins.php:481
+msgid "Extended Super Admin Settings"
+msgstr ""
+
+#: class-extended_super_admins.php:460
+msgid ""
+"You do not have the appropriate permissions to modify the settings for this "
+"plugin. Please work with the network owner to update these settings."
+msgstr ""
+
+#: class-extended_super_admins.php:473
+msgid "The codex information was flushed and repopulated."
+msgstr ""
+
+#: class-extended_super_admins.php:484
+msgid "The options for this plugin were updated successfully."
+msgstr ""
+
+#: class-extended_super_admins.php:486
+msgid "There was an error updating the options for this plugin."
+msgstr ""
+
+#: class-extended_super_admins.php:496
+msgid ""
+"In the lists of capabilities below, wherever (?) appears, you can click on "
+"that to view information from the WordPress Codex about that specific "
+"capability. The information is retrieved from the Codex once a week."
+msgstr ""
+
+#: class-extended_super_admins.php:496
+msgid "Don't like the description? Login to the WordPress Codex and edit it."
+msgstr ""
+
+#: class-extended_super_admins.php:522
+msgid "Save"
+msgstr ""
+
+#: class-extended_super_admins.php:527
+msgid "Flush the Cache of Codex Info"
+msgstr ""
+
+#: class-extended_super_admins.php:563 class-extended_super_admins.php:606
+msgid "Would you like this role to be deleted?"
+msgstr ""
+
+#: class-extended_super_admins.php:632
+msgid "Name of Role:"
+msgstr ""
+
+#: class-extended_super_admins.php:652
+msgid "Capabilities to Remove From This Role"
+msgstr ""
+
+#: class-extended_super_admins.php:690
+msgid "Users That Should Have This Role"
+msgstr ""
+
+#: class-wpmn_super_admins.php:45
+msgid "Multi-Network Activate"
+msgstr ""
+
+#: class-wpmn_super_admins.php:52
+msgid "Deactivate On All Networks"
+msgstr ""

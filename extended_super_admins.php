@@ -8,6 +8,7 @@ Author: Curtiss Grymala
 Author URI: http://ten-321.com/
 Network: true
 License: GPL2
+Text Domain: esa_text_domain
 
 ---
 
