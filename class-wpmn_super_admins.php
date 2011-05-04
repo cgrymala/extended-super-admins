@@ -36,24 +36,23 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			
 			global $wp_version;
 			$options_page = ( version_compare( $wp_version, '3.0.9', '>' ) ) ? 'settings' : 'ms-admin';
+			if( !strstr( __FILE__, 'mu-plugins' ) ) {
+				$links['multinetwork_activate'] = '<br/><a href="' .
+					wp_nonce_url( $options_page .
+					'.php?options-action=multi_network_activate&page=' .
+					ESA_OPTIONS_PAGE, '_esa_multi_network' ) .
+					'">' .
+					__( 'Multi-Network Activate', ESA_TEXT_DOMAIN ) .
+					'</a>';
+				$links['multinetwork_deactivate'] = '<a href="' .
+					wp_nonce_url( $options_page .
+					'.php?options-action=multi_network_deactivate&page=' .
+					ESA_OPTIONS_PAGE, '_esa_multi_network' ) .
+					'">' .
+					__( 'Deactivate On All Networks', ESA_TEXT_DOMAIN ) .
+					'</a>';
+			}
 			
-			$multi_network_activate_link = '<br/><a href="' .
-				wp_nonce_url( $options_page .
-				'.php?options-action=multi_network_activate&page=' .
-				ESA_OPTIONS_PAGE, '_esa_multi_network' ) .
-				'">' .
-				__( 'Multi-Network Activate', ESA_TEXT_DOMAIN ) .
-				'</a>';
-			$multi_network_deactivate_link = '<a href="' .
-				wp_nonce_url( $options_page .
-				'.php?options-action=multi_network_deactivate&page=' .
-				ESA_OPTIONS_PAGE, '_esa_multi_network' ) .
-				'">' .
-				__( 'Deactivate On All Networks', ESA_TEXT_DOMAIN ) .
-				'</a>';
-			
-			if( !strstr( __FILE__, 'mu-plugins' ) )
-				array_push( $links, $multi_network_activate_link, $multi_network_deactivate_link );
 			return $links;
 		}
 		

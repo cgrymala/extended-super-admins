@@ -139,16 +139,12 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		function add_settings_link( $links ) {
 			global $wp_version;
 			$options_page = ( version_compare( $wp_version, '3.0.9', '>' ) ) ? 'settings' : 'ms-admin';
-			$settings_link = '<a href="' . $options_page . '.php?page=' . ESA_OPTIONS_PAGE . '">';
-			$settings_link .= __( 'Settings', ESA_TEXT_DOMAIN );
-			$settings_link .= '</a>';
+			$slink = array( 'settings_link' => '<a href="' . $options_page . '.php?page=' . ESA_OPTIONS_PAGE . '">' . __( 'Settings', ESA_TEXT_DOMAIN ) . '</a>' );
+			$links = array_merge( $slink, $links );
 			
-			$del_settings_link = '<a href="' . $options_page . '.php?page=' . ESA_OPTIONS_PAGE . '&options-action=remove_settings">';
-			$del_settings_link .= __( 'Delete Settings', ESA_TEXT_DOMAIN );
-			$del_settings_link .= '</a>';
+			$slink = array( 'delete_settings_link' => '<a href="' . $options_page . '.php?page=' . ESA_OPTIONS_PAGE . '&options-action=remove_settings">' . __( 'Delete Settings', ESA_TEXT_DOMAIN ) . '</a>' );
+			$links = array_merge( $links, $slink );
 			
-			array_unshift( $links, $settings_link );
-			array_push( $links, $del_settings_link );
 			return $links;
 		}
 		
