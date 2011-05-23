@@ -31,6 +31,8 @@ if( 'multi_network_activate' == $_GET['options-action'] ) {
 		$GLOBALS['esa_options'] = maybe_unserialize( get_site_option( ESA_OPTION_NAME, array(), false ) );
 		$GLOBALS['force_esa_options_update'] = true;
 		
+		$original_site = array( 'site_id' => $GLOBALS['site_id'], 'blog_id' => $GLOBALS['blog_id'] );
+		
 		foreach( $networks as $network ) {
 			if( $main_site_id == $network->id ) {
 				print( '<p>' . __( sprintf( 'We skipped over the network with an ID of %d, because the plugin already appears to be network active on that site.', $network->id ), ESA_TEXT_DOMAIN ) . '</p>' );
@@ -41,6 +43,8 @@ if( 'multi_network_activate' == $_GET['options-action'] ) {
 			
 			$opts_updated = false;
 			$wpmn_super_admins_obj->switch_to_site( $network->id );
+			unset( $GLOBALS['previous_site'] );
+			
 			if( current_user_can( 'manage_esa_options' ) ) {
 				$asp = maybe_unserialize( get_site_option( 'active_sitewide_plugins' ) );
 				if( empty( $asp ) || !array_key_exists( ESA_PLUGIN_BASENAME, $asp ) ) {
@@ -54,7 +58,8 @@ if( 'multi_network_activate' == $_GET['options-action'] ) {
 						$wpmn_super_admins_obj = new wpmn_super_admins();
 						$opts_updated = true;
 					} else {
-						$wpmn_super_admins_obj->set_options( $GLOBALS['esa_options'], $GLOBALS['force_esa_options_update'] );
+						if( !empty( $GLOBALS['esa_options'] ) )
+							$wpmn_super_admins_obj->set_options( $GLOBALS['esa_options'], $GLOBALS['force_esa_options_update'] );
 						$opts_updated = true;
 					}
 					if( $opts_updated ) {
@@ -69,9 +74,11 @@ if( 'multi_network_activate' == $_GET['options-action'] ) {
 			} else {
 				echo '<p>' . __( 'You do not have the appropriate permissions to network activate this plug-in on the network with an ID of ', ESA_TEXT_DOMAIN ) . $network->id . '</p>';
 			}
-			$wpmn_super_admins_obj->restore_current_site();
 		}
 		echo '</div>';
+		
+		$GLOBALS['previous_site'] = (object)$original_site;
+		$wpmn_super_admins_obj->restore_current_site();
 		
 		unset( $GLOBALS['esa_options'], $GLOBALS['force_esa_options_update'] );
 	} else {
