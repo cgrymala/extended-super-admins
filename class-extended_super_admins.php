@@ -645,7 +645,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			$output = '
 					<tr valign="top">
 						<th scope="row">
-							' . __( 'Capabilities to Remove From This Role', ESA_TEXT_DOMAIN ) . '
+							' . __( 'Capabilities to <strong>Remove</strong> From This Role', ESA_TEXT_DOMAIN ) . '
 						</th>
 						<td>';
 			foreach( $allcaps as $cap ) {
