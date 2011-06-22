@@ -64,6 +64,14 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			get_currentuserinfo();
 			/*$user = new WP_User( $current_user->ID );*/
 			
+			if( is_admin() && !is_network_admin() ) {
+				$current_user->remove_cap( 'manage_esa_options' );
+				if( empty( $current_user->caps ) )
+					/*wp_die( var_dump( $current_user ) );*/
+					remove_user_from_blog( $current_user->ID );
+				return false;
+			}
+			
 			if( $this->is_full_network_admin() )
 				$current_user->add_cap( 'manage_esa_options' );
 			else

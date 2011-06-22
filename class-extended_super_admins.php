@@ -158,6 +158,14 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			global $current_user;
 			get_currentuserinfo();
 			
+			if( is_admin() && !is_network_admin() ) {
+				$current_user->remove_cap( 'manage_esa_options' );
+				if( empty( $current_user->caps ) )
+					/*wp_die( var_dump( $current_user ) );*/
+					remove_user_from_blog( $current_user->ID );
+				return false;
+			}
+			
 			if( is_super_admin() && current_user_can( 'manage_network_plugins' ) && current_user_can( 'manage_network_users' ) ) {
 				$current_user->add_cap( 'manage_esa_options' );
 				return true;
@@ -511,6 +519,13 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			}
 			
 			$output = '';
+			
+			$output .= sprintf( __( '<p>Don\'t see the user you were looking for listed in the "%s" box above? Only existing Super Admins show up in that list, so you will need to grant that user Super Admin privileges before you can choose them from the list.</p>', ESA_TEXT_DOMAIN ), __( 'Users That Should Have This Role', ESA_TEXT_DOMAIN ) );
+			
+			if( $this->is_multi_network ) {
+				$output .= __( '<p>When you save these options, they will be saved across all of your networks. At this time, there is no way to save any options individually per network. Unfortunately, that means that there is currently no way to grant a user unfettered Super Admin privileges on one network while restricting their Super Admin privileges on another network. It is all or nothing. That said, though, this plugin does not grant any extra privileges to anyone. If there is a network on which they are not set up as a Super Admin, they will still not be granted any Super Admin privileges on that network when you save these options.</p><p>There are plans to allow these changes to be saved on individual networks in the future, but it just has not reached that point, yet.</p>', ESA_TEXT_DOMAIN );
+			}
+			
 			if( is_array( $this->caps_descriptions ) )
 				$output .= '<div id="caps_container">' . implode( "\n", $this->caps_descriptions ) . '</div>';
 			$output .= '
