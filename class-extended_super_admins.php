@@ -4,7 +4,7 @@
  * @package WordPress
  * @subpackage ExtendedSuperAdmins
  * @since 0.1a
- * @version 0.7a
+ * @version 0.7
  */
 
 /**
@@ -100,10 +100,10 @@ if( !class_exists( 'extended_super_admins' ) ) {
 					delete_site_option( '_esa_capsCodexInfo' );
 				
 				if( function_exists( 'wp_register_style' ) ) {
-					wp_register_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.min.css', __FILE__ ), array(), '0.7a', 'all' );
+					wp_register_style( 'esa_admin_styles', plugins_url( 'css/extended_super_admins.min.css', __FILE__ ), array(), '0.7', 'all' );
 				}
 				if( function_exists( 'wp_register_script' ) ) {
-					wp_register_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.min.js', __FILE__ ), array('jquery','post'), '0.7a', true );
+					wp_register_script( 'esa_admin_scripts', plugins_url( 'scripts/extended_super_admins.min.js', __FILE__ ), array('jquery','post'), '0.7', true );
 				}
 				
 				if( version_compare( '3.0.9', $GLOBALS['wp_version'], '<' ) ) {

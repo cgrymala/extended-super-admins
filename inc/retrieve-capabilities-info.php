@@ -15,7 +15,7 @@
  * we return the information as we have it stored in the local database. If not, we add that
  * information to the local database and return it directly from the Codex.
  *
- * Completely rewritten in 0.7a
+ * Completely rewritten in 0.7
  *
  * @since 0.4a
  * @uses WP_Http::request()

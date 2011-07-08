@@ -1,7 +1,7 @@
 /**
  * Extended Super Admins
  * Admin JavaScript functions
- * @version 0.7a
+ * @version 0.7
  */
 
 jQuery( function( $ ) {
