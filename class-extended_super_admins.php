@@ -538,6 +538,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			<a href="' . network_admin_url( 'settings.php?page=' . $_REQUEST['page'] . '&options-action=flush-codex-cache' ) . '" class="button">' . __( 'Flush the Cache of Codex Info', ESA_TEXT_DOMAIN ) . '</a>
 		</p>';
 			$output .= '
+					<br style="clear: both;" />
 				</div><!-- #post-body-content -->
 			</div><!-- #post-body -->
 		</div><!-- #poststuff --><br class="clear">
@@ -673,7 +674,11 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				if( !function_exists( 'getCodexCapabilities' ) )
 					require_once( 'inc/retrieve-capabilities-info.php' );
 				
-				$this->caps_descriptions = array_merge( $this->caps_descriptions, getCodexCapabilities() );
+				if( is_array( $this->caps_descriptions ) ) {
+					$tmp = getCodexCapabilities();
+					if( is_array( $tmp ) )
+						$this->caps_descriptions = array_merge( $this->caps_descriptions, getCodexCapabilities() );
+				}
 				
 				if( !empty( $this->caps_descriptions ) && array_key_exists( $cap, $this->caps_descriptions ) ) {
 					$output .= ' <span class="caps_info_hover" id="caps_info_hover_' . $id . '_' . $cap . '">(?)</span>';
@@ -745,6 +750,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				'manage_network_themes'		=> 1,
 				'manage_network_options'	=> 1,
 				'manage_sites'				=> 1,
+				'manage_esa_options'		=> 1,
 			);
 			$this->allcaps = array_merge( $this->allcaps, $multisitecaps );
 			

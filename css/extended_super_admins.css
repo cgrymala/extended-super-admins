@@ -126,3 +126,7 @@ div.esa-modal-background {
 	right: .5em;
 	cursor: pointer;
 }
+
+#footer {
+	position: relative;
+}

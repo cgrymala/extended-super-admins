@@ -3,7 +3,7 @@ Contributors: cgrymala
 Donate link: http://www.umw.edu/gift/make_a_gift/default.php
 Tags: wpmu, multisite, super admins, site admin, role manager, capabilities, wpmn
 Requires at least: 3.0
-Tested up to: 3.1
+Tested up to: 3.2
 Stable tag: 0.6a
 
 This plugin allows you to create multiple levels of Super Admins in a multi-site configuration.
@@ -86,6 +86,8 @@ This plugin creates a new capability called "manage_esa_options". If you do not 
 * Minified JavaScript and CSS files used in the plugin (non-minified source files are still included in the package)
 * Added ability to manually flush the Codex information
 * Extended length of Codex cache from 7 days to 30 days
+* Hopefully fixed issue that allowed modified users to change ESA settings
+* Minor change in CSS for 3.2
 
 = 0.6a =
 * The JavaScript for this plugin has been optimized quite a bit
