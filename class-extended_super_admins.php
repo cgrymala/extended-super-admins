@@ -138,6 +138,9 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		
 		function add_settings_link( $links ) {
 			global $wp_version;
+			if( !$this->can_manage_plugin() )
+				return array();
+			
 			$options_page = ( version_compare( $wp_version, '3.0.9', '>' ) ) ? 'settings' : 'ms-admin';
 			$slink = array( 'settings_link' => '<a href="' . $options_page . '.php?page=' . ESA_OPTIONS_PAGE . '">' . __( 'Settings', ESA_TEXT_DOMAIN ) . '</a>' );
 			$links = array_merge( $slink, $links );

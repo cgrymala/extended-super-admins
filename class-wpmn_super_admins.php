@@ -32,6 +32,9 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 		}
 		
 		function add_settings_link( $links ) {
+			if( !$this->can_manage_plugin() )
+				return array( 'multinetwork_activate' => null, 'multinetwork_deactivate' => null );
+			
 			$links = parent::add_settings_link( $links );
 			
 			global $wp_version;

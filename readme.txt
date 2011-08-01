@@ -78,7 +78,7 @@ This plugin creates a new capability called "manage_esa_options". If you do not 
 3. The way the admin area looks while modifying an existing role. In this shot, an example of the Codex information is being displayed.
 
 == Changelog ==
-= 0.7a =
+= 0.7 =
 * Added multi-network support for [Networks+ plugin](http://wpebooks.com/networks/)
 * Wrote custom function to switch networks in a multi-network setup
 * Optimized the way Codex information is retrieved, stored and displayed
@@ -87,6 +87,7 @@ This plugin creates a new capability called "manage_esa_options". If you do not 
 * Added ability to manually flush the Codex information
 * Extended length of Codex cache from 7 days to 30 days
 * Minor change in CSS for 3.2
+* Removed "Activate" and "Deactivate" links from plugins screen if user doesn't have the manage_esa_options capability
 
 = 0.6.1 =
 * Hopefully fixed issue that allowed modified users to edit their own permissions
