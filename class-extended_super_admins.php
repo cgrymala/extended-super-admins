@@ -72,6 +72,8 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			if( !is_multisite() || !is_user_logged_in() )
 				return false;
 			
+			error_log( '[ESA Notice]: Constructing the ESA object' );
+			
 			$esa_options = isset( $GLOBALS['esa_options'] ) ? $GLOBALS['esa_options'] : NULL;
 			$force_update = isset( $GLOBALS['force_esa_options_update'] ) ? $GLOBALS['force_esa_options_update'] : false;
 			$this->set_options( $esa_options, $force_update );
@@ -155,8 +157,10 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		 * Determine whether or not this user is allowed to modify this plugin's options
 		 */
 		function can_manage_plugin() {
-			if( $this->perms_checked )
-				return current_user_can( 'manage_esa_options' );
+			if( $this->perms_checked ) {
+				error_log( '[ESA Notice]: The permissions have already been checked. It was determined that the current user is ' . ( $this->current_user_can( 'manage_esa_options' ) ? '' : 'not ' ) . ' able to manage this plugin.' );
+				return $this->current_user_can( 'manage_esa_options' );
+			}
 			
 			global $current_user;
 			get_currentuserinfo();
@@ -170,12 +174,23 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			}
 			
 			if( is_super_admin() && current_user_can( 'manage_network_plugins' ) && current_user_can( 'manage_network_users' ) ) {
+				error_log( '[ESA Notice]: The user with a login of ' . $current_user->user_login . ' should be able to manage this plugin' );
 				$current_user->add_cap( 'manage_esa_options' );
 				return true;
 			} else {
+				error_log( '[ESA Notice]: The user with a login of ' . $current_user->user_login . ' is not able to manage this plugin' );
 				$current_user->remove_cap( 'manage_esa_options' );
 				return false;
 			}
+		}
+		
+		/**
+		 * Override the normal current_user_can() function, since it seems to choke on either network caps or custom caps
+		 */
+		function current_user_can( $cap ) {
+			global $current_user;
+			get_currentuserinfo();
+			return array_key_exists( $cap, $current_user->caps ) && $current_user->caps[$cap];
 		}
 		
 		/**
@@ -460,7 +475,8 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		}
 		
 		function admin_options_page() {
-			if( !current_user_can( 'manage_esa_options' ) ) {
+			if( !$this->current_user_can( 'manage_esa_options' ) ) {
+				error_log( '[ESA Notice]: The current user was determined not to have the right cap to view the admin settings page.' );
 ?>
 <div class="wrap">
 	<h2><?php _e('Extended Super Admin Settings', ESA_TEXT_DOMAIN) ?></h2>
