@@ -64,8 +64,10 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			get_currentuserinfo();
 			
 			if( $this->perms_checked ) {
-				error_log( '[ESA Notice]: The current list of this user\'s caps looks like: ' . print_r( $current_user->allcaps, true ) );
-				error_log( '[ESA Notice]: The permissions have already been checked. It was determined that the current user is ' . ( $this->current_user_can( 'manage_esa_options' ) ? '' : 'not ' ) . 'able to manage this plugin.' );
+				if( $this->_use_log )
+					error_log( '[ESA Notice]: The current list of this user\'s caps looks like: ' . print_r( $current_user->allcaps, true ) );
+				if( $this->_use_log )
+					error_log( '[ESA Notice]: The permissions have already been checked. It was determined that the current user is ' . ( $this->current_user_can( 'manage_esa_options' ) ? '' : 'not ' ) . 'able to manage this plugin.' );
 				return $this->current_user_can( 'manage_esa_options' );
 			}
 			
@@ -82,10 +84,12 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			}
 			
 			if( $this->is_full_network_admin() ) {
-				error_log( '[ESA Notice]: The current user was determined to be a full network admin, and is therefore able to manage the settings for this plugin.' );
+				if( $this->_use_log )
+					error_log( '[ESA Notice]: The current user was determined to be a full network admin, and is therefore able to manage the settings for this plugin.' );
 				$current_user->add_cap( 'manage_esa_options' );
 			} else {
-				error_log( '[ESA Notice]: The current user is not a multi-network admin, so no ESA permissions were granted.' );
+				if( $this->_use_log )
+					error_log( '[ESA Notice]: The current user is not a multi-network admin, so no ESA permissions were granted.' );
 				$current_user->remove_cap( 'manage_esa_options' );
 			}
 				

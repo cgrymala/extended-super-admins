@@ -64,6 +64,10 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		var $caps_descriptions = array(
 			'manage_esa_options' => '<div id="_role_caps_manage_esa_options" class="_role_caps"><h3>manage_esa_options</h3><div class="_single_cap"><p>Capability specific to the Extended Super Admins plugin. Allows user to manage the options for the Extended Super Admins plugin.</p></div></div>',
 		);
+		/**
+		 * Determines whether to send error messages to the log
+		 */
+		protected $_use_log = false;
 		
 		/**
 		 * Create our extended_super_admins object
@@ -72,7 +76,11 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			if( !is_multisite() || !is_user_logged_in() )
 				return false;
 			
-			error_log( '[ESA Notice]: Constructing the ESA object' );
+			if( defined( 'WP_DEBUG' ) && WP_DEBUG )
+				$this->_use_log = true;
+			
+			if( $this->_use_log )
+				error_log( '[ESA Notice]: Constructing the ESA object' );
 			
 			$esa_options = isset( $GLOBALS['esa_options'] ) ? $GLOBALS['esa_options'] : NULL;
 			$force_update = isset( $GLOBALS['force_esa_options_update'] ) ? $GLOBALS['force_esa_options_update'] : false;
@@ -158,7 +166,8 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		 */
 		function can_manage_plugin() {
 			if( $this->perms_checked ) {
-				error_log( '[ESA Notice]: The permissions have already been checked. It was determined that the current user is ' . ( $this->current_user_can( 'manage_esa_options' ) ? '' : 'not ' ) . ' able to manage this plugin.' );
+				if( $this->_use_log )
+					error_log( '[ESA Notice]: The permissions have already been checked. It was determined that the current user is ' . ( $this->current_user_can( 'manage_esa_options' ) ? '' : 'not ' ) . ' able to manage this plugin.' );
 				return $this->current_user_can( 'manage_esa_options' );
 			}
 			
@@ -174,11 +183,13 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			}
 			
 			if( is_super_admin() && current_user_can( 'manage_network_plugins' ) && current_user_can( 'manage_network_users' ) ) {
-				error_log( '[ESA Notice]: The user with a login of ' . $current_user->user_login . ' should be able to manage this plugin' );
+				if( $this->_use_log )
+					error_log( '[ESA Notice]: The user with a login of ' . $current_user->user_login . ' should be able to manage this plugin' );
 				$current_user->add_cap( 'manage_esa_options' );
 				return true;
 			} else {
-				error_log( '[ESA Notice]: The user with a login of ' . $current_user->user_login . ' is not able to manage this plugin' );
+				if( $this->_use_log )
+					error_log( '[ESA Notice]: The user with a login of ' . $current_user->user_login . ' is not able to manage this plugin' );
 				$current_user->remove_cap( 'manage_esa_options' );
 				return false;
 			}
@@ -476,7 +487,8 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		
 		function admin_options_page() {
 			if( !$this->current_user_can( 'manage_esa_options' ) ) {
-				error_log( '[ESA Notice]: The current user was determined not to have the right cap to view the admin settings page.' );
+				if( $this->_use_log )
+					error_log( '[ESA Notice]: The current user was determined not to have the right cap to view the admin settings page.' );
 ?>
 <div class="wrap">
 	<h2><?php _e('Extended Super Admin Settings', ESA_TEXT_DOMAIN) ?></h2>
