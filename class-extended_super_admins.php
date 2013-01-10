@@ -775,13 +775,25 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				}
 			}
 			$multisitecaps = array(
-				'manage_network'			=> 1,
-				'manage_network_plugins'	=> 1,
-				'manage_network_users'		=> 1,
-				'manage_network_themes'		=> 1,
-				'manage_network_options'	=> 1,
-				'manage_sites'				=> 1,
-				'manage_esa_options'		=> 1,
+				'manage_network'         => 1,
+				'manage_network_plugins' => 1,
+				'manage_network_users'   => 1,
+				'manage_network_themes'  => 1,
+				'manage_network_options' => 1,
+				'manage_sites'           => 1,
+				'manage_esa_options'     => 1,
+				'update_core'            => 1, 
+				'list_users'             => 1, 
+				'remove_users'           => 1, 
+				'promote_users'          => 1, 
+				'add_users'              => 1, 
+				'delete_themes'          => 1, 
+				'export'                 => 1, 
+				'edit_comment'           => 1, 
+				'edit_plugins'           => 1, 
+				'edit_themes'            => 1, 
+				'update_plugins'         => 1, 
+				'update_themes'          => 1, 
 			);
 			$this->allcaps = array_merge( $this->allcaps, $multisitecaps );
 			
