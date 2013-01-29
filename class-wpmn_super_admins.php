@@ -7,10 +7,10 @@
  * @version 0.7
  */
 
-if( !class_exists( 'extended_super_admins' ) )
+if ( ! class_exists( 'extended_super_admins' ) )
 	require_once( 'class-extended_super_admins.php' );
 
-if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins' ) ) {
+if ( class_exists( 'extended_super_admins' ) && ! class_exists( 'wpmn_super_admins' ) ) {
 	/**
 	 * The class for extended super admins in a WordPress Multi-Network setup
 	 * @package WordPress
@@ -21,25 +21,25 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 		var $multi_network_admins = array();
 		
 		function __construct() {
-			if( !parent::__construct() )
+			if ( ! parent::__construct() )
 				return false;
 			
 			$this->is_multi_network = true;
 			$this->can_manage_plugin();
 			
 			add_action( 'plugins_loaded', 'set_multi_network_admins' );
-			add_filter('network_admin_plugin_action_links_' . ESA_PLUGIN_BASENAME, array($this, 'add_settings_link'));
+			add_filter( 'network_admin_plugin_action_links_' . ESA_PLUGIN_BASENAME, array( $this, 'add_settings_link' ) );
 		}
 		
 		function add_settings_link( $links ) {
-			if( !$this->can_manage_plugin() )
+			if ( ! $this->can_manage_plugin() )
 				return array( 'multinetwork_activate' => null, 'multinetwork_deactivate' => null );
 			
 			$links = parent::add_settings_link( $links );
 			
 			global $wp_version;
 			$options_page = ( version_compare( $wp_version, '3.0.9', '>' ) ) ? 'settings' : 'ms-admin';
-			if( !strstr( __FILE__, 'mu-plugins' ) ) {
+			if ( ! strstr( __FILE__, 'mu-plugins' ) ) {
 				$links['multinetwork_activate'] = '<br/><a href="' .
 					wp_nonce_url( $options_page .
 					'.php?options-action=multi_network_activate&page=' .
@@ -63,11 +63,12 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			global $current_user;
 			get_currentuserinfo();
 			
-			if( $this->perms_checked ) {
-				if( $this->_use_log )
+			if ( $this->perms_checked ) {
+				if ( $this->_use_log )
 					error_log( '[ESA Notice]: The current list of this user\'s caps looks like: ' . print_r( $current_user->allcaps, true ) );
-				if( $this->_use_log )
+				if ( $this->_use_log )
 					error_log( '[ESA Notice]: The permissions have already been checked. It was determined that the current user is ' . ( $this->current_user_can( 'manage_esa_options' ) ? '' : 'not ' ) . 'able to manage this plugin.' );
+				
 				return $this->current_user_can( 'manage_esa_options' );
 			}
 			
@@ -75,20 +76,20 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			get_currentuserinfo();
 			/*$user = new WP_User( $current_user->ID );*/
 			
-			if( is_admin() && !is_network_admin() ) {
+			if ( is_admin() && ! is_network_admin() ) {
 				$current_user->remove_cap( 'manage_esa_options' );
-				if( empty( $current_user->caps ) )
+				if ( empty( $current_user->caps ) )
 					/*wp_die( var_dump( $current_user ) );*/
 					remove_user_from_blog( $current_user->ID );
 				return false;
 			}
 			
-			if( $this->is_full_network_admin() ) {
-				if( $this->_use_log )
+			if ( $this->is_full_network_admin() ) {
+				if ( $this->_use_log )
 					error_log( '[ESA Notice]: The current user was determined to be a full network admin, and is therefore able to manage the settings for this plugin.' );
 				$current_user->add_cap( 'manage_esa_options' );
 			} else {
-				if( $this->_use_log )
+				if ( $this->_use_log )
 					error_log( '[ESA Notice]: The current user is not a multi-network admin, so no ESA permissions were granted.' );
 				$current_user->remove_cap( 'manage_esa_options' );
 			}
@@ -114,7 +115,7 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			$network_admins = array();
 			$all_super_admins = array();
 			$network_admins = $wpdb->get_results( $wpdb->prepare( "SELECT site_id, meta_value FROM " . $wpdb->sitemeta . " WHERE meta_key = 'site_admins'" ) );
-			foreach( $network_admins as $network ) {
+			foreach ( $network_admins as $network ) {
 				$all_super_admins = array_merge( $all_super_admins, maybe_unserialize( $network->meta_value ) );
 				$full_network_admins = array_intersect( $all_super_admins, maybe_unserialize( $network->meta_value ) );
 			}
@@ -146,7 +147,7 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 		 * @return bool whether or not the user is a full network admin
 		 */
 		function is_full_network_admin() {
-			if( empty( $this->multi_network_admins ) )
+			if ( empty( $this->multi_network_admins ) )
 				$this->set_multi_network_admins();
 			
 			global $current_user;
@@ -155,20 +156,20 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 		}
 		
 		function set_multi_network_admins() {
-			if( !is_super_admin() )
+			if ( ! is_super_admin() )
 				return;
 				
 			$this->multi_network_admins = $this->get_super_network_admins();
 		}
 		
 		function get_super_admin_list() {
-			if( !empty( $this->all_super_admins ) )
+			if ( ! empty( $this->all_super_admins ) )
 				return $this->all_super_admins;
 			
 			global $wpdb;
 			$all_super_admins = array();
 			$super_admins = $wpdb->get_results( $wpdb->prepare( "SELECT meta_value FROM " . $wpdb->sitemeta . " WHERE meta_key = 'site_admins'" ) );
-			foreach( $super_admins as $site_admins ) {
+			foreach ( $super_admins as $site_admins ) {
 				$site_admins = maybe_unserialize( $site_admins->meta_value );
 				$all_super_admins = array_merge( $all_super_admins, $site_admins );
 			}
@@ -177,7 +178,7 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 		}
 		
 		function save_options( $values_to_use=NULL ) {
-			if( empty( $values_to_use ) ) {
+			if ( empty( $values_to_use ) ) {
 				$this->debug = '<div class="error">';
 				$this->debug .= '<p>' . __( 'The form to save the Extended Super Admin options was submitted, but the values were empty. Therefore, nothing was updated.', ESA_TEXT_DOMAIN ) . '</p>';
 				$this->debug .= '</div>';
@@ -190,10 +191,10 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			global $wpdb;
 			$networks = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT id FROM " . $wpdb->site ) );
 			$updated = true;
-			foreach( $networks as $network ) {
+			foreach ( $networks as $network ) {
 				$this->switch_to_site( $network->id );
 				global $new_whitelist_options;
-				if( !is_array( $new_whitelist_options ) || !array_key_exists( ESA_OPTION_NAME, $new_whitelist_options ) )
+				if ( ! is_array( $new_whitelist_options ) || ! array_key_exists( ESA_OPTION_NAME, $new_whitelist_options ) )
 					register_setting( ESA_OPTION_NAME, ESA_OPTION_NAME, array( $this, 'verify_options' ) );
 				$upd = update_site_option( ESA_OPTION_NAME, $values_to_use );
 				if( !$upd )
@@ -201,7 +202,7 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 				$this->restore_current_site();
 			}
 			
-			if( $updated ) {
+			if ( $updated ) {
 				$this->debug = '<div class="updated">';
 				$this->debug .= '<p>' . __( 'The options for the Extended Super Admins plugin have been updated.', ESA_TEXT_DOMAIN ) . '</p>';
 				
@@ -234,7 +235,7 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 			global $wpdb;
 			$networks = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT id FROM " . $wpdb->site ) );
 			$updated = true;
-			foreach( $networks as $network ) {
+			foreach ( $networks as $network ) {
 				$this->switch_to_site( $network->id );
 				delete_site_option( ESA_OPTION_NAME );
 				$this->restore_current_site();
@@ -275,14 +276,14 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 		function switch_to_network( $new_site_id ) {
 			global $wpdb;
 			$site_info = $wpdb->get_results( $wpdb->prepare( "SELECT site_id, blog_id FROM $wpdb->blogs GROUP BY site_id" ) );
-			if( empty( $site_info ) )
+			if ( empty( $site_info ) )
 				return false;
 			
-			foreach( $site_info as $s ) {
-				if( $new_site_id == $s->site_id )
+			foreach ( $site_info as $s ) {
+				if ( $new_site_id == $s->site_id )
 					$new_blog_id = $s->blog_id;
 			}
-			if( empty( $new_blog_id ) )
+			if ( empty( $new_blog_id ) )
 				return false;
 			
 			$GLOBALS['previous_site']->site_id = $GLOBALS['site_id'];
@@ -314,7 +315,7 @@ if( class_exists( 'extended_super_admins' ) && !class_exists( 'wpmn_super_admins
 		 * @since 0.7a
 		 */
 		function restore_current_network() {
-			if( !isset( $GLOBALS['previous_site'] ) || empty( $GLOBALS['previous_site'] ) )
+			if ( ! isset( $GLOBALS['previous_site'] ) || empty( $GLOBALS['previous_site'] ) )
 				return false;
 			
 			global $wpdb;
