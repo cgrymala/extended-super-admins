@@ -534,7 +534,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				$output .= $this->debug;
 				unset( $this->debug );
 			}
-			$output .= '<p><em>' . __( 'In the lists of capabilities below, wherever (?) appears, you can click on that to view information from the WordPress Codex about that specific capability. The information is retrieved from the Codex once a week.', ESA_TEXT_DOMAIN ) . '</em></p><p><em>' . __( 'Don\'t like the description? Login to the WordPress Codex and edit it.', ESA_TEXT_DOMAIN ) . '</em></p>';
+			$output .= '<p><em>' . __( 'In the lists of capabilities below, wherever (?) appears, you can click on that to view information from the WordPress Codex about that specific capability. The information is retrieved from the Codex once a week.', ESA_TEXT_DOMAIN ) . '</em></p><p><em>' . sprintf( __( 'Don\'t like the description? <a href="%s">Login to the WordPress Codex and edit it.</a>', ESA_TEXT_DOMAIN ), 'http://codex.wordpress.org/Roles_and_Capabilities' ) . '</em></p>';
 			$output .= '
 		<form method="post" action="">';
 			$output .= wp_nonce_field( 'esa_options_save', '_wp_nonce', true, false );
@@ -572,7 +572,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			<input type="hidden" name="esa_options_action" value="save"/>
 		</form>
 		<p>
-			<a href="' . network_admin_url( 'settings.php?page=' . $_REQUEST['page'] . '&options-action=flush-codex-cache' ) . '" class="button">' . __( 'Flush the Cache of Codex Info', ESA_TEXT_DOMAIN ) . '</a>
+			<a href="' . network_admin_url( 'settings.php?page=' . $_REQUEST['page'] . '&amp;options-action=flush-codex-cache' ) . '" class="button">' . __( 'Flush the Cache of Codex Info', ESA_TEXT_DOMAIN ) . '</a>
 		</p>';
 			$output .= '
 					<br style="clear: both;" />
@@ -658,7 +658,9 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			<table class="form-table esa-options-table" id="esa-options-table-' . $id . '">';
 			$output .= ( empty( $delchkbx ) ) ? '' : '
 				<thead>
-					<th>&nbsp;</th><td>' . $delchkbx . '</td>
+					<tr>
+						<th>&nbsp;</th><td>' . $delchkbx . '</td>
+					</tr>
 				</thead>';
 			$output .= '
 				<tbody id="esa_options_' . $id . '">';
@@ -676,7 +678,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				return;
 			
 			$output = '
-					<tr valign="top">
+					<tr style="vertical-align: top">
 						<th scope="row">
 							<label for="role_name_' . $id . '">' . __( 'Name of Role:', ESA_TEXT_DOMAIN ) . '</label>
 						</th>';
@@ -696,7 +698,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			$allcaps = array_filter( array_keys( $this->get_allcaps() ), array( $this, 'remove_numeric_keys' ) );
 			
 			$output = '
-					<tr valign="top">
+					<tr style="vertical-align: top">
 						<th scope="row">
 							' . __( 'Capabilities to <strong>Remove</strong> From This Role', ESA_TEXT_DOMAIN ) . '
 						</th>
@@ -738,7 +740,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				$this->role_members[$id] = array( 0 => '' );
 			}
 			$output = '
-					<tr valign="top">
+					<tr style="vertical-align: top">
 						<th scope="row">
 							<label for="role_members_' . $id . '">' . __( 'Users That Should Have This Role', ESA_TEXT_DOMAIN ) . '</label>
 						</th>';

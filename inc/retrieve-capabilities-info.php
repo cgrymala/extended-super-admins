@@ -105,11 +105,17 @@ function getCodexCapabilities() {
 	
 	$content_array = array();
 	foreach( $content as $c ) {
-		$idpos = strpos( $c, '">' );
+		if ( stristr( $c, '=' ) ) {
+			$c = explode( ' ', $c );
+			$c = array_shift( $c );
+			$idpos = strpos( $c, '"' );
+		} else {
+			$idpos = strpos( $c, '">' );
+		}
 		$id = substr( $c, 0, $idpos );
 		$c = str_replace( $id . '"> <span class="mw-headline">' . $id . '</span></h3>', '', $c );
 		if( !empty( $id ) )
-			$content_array[$id] = '<div id="_role_caps_' . $id . '" class="_role_caps"><h3>' . $id . '</h3><div class="_single_cap">' . trim( $c ) . '</div></div>';
+			$content_array[$id] = '<div id="_role_caps_' . esc_attr( $id ) . '" class="_role_caps"><h3>' . $id . '</h3><div class="_single_cap">' . trim( $c ) . '</div></div>';
 	}
 	$capsInfo['pageContent'] = $content_array;
 	/*die( '<pre><code>' . htmlentities( $content ) . '</code></pre>' );*/
