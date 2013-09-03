@@ -61,7 +61,7 @@ if ( ! defined( 'ESA_CODEX_QUERY' ) )
 	 * Define the API Query to retrieve the Codex information
 	 * @since 0.7a
 	 */
-	define( 'ESA_CODEX_QUERY', '?action=query&prop=revisions&meta=siteinfo&titles=Roles_and_Capabilities&rvsection=13&rvprop=content|timestamp&format=php' );
+	define( 'ESA_CODEX_QUERY', '?action=query&prop=revisions&meta=siteinfo&titles=Roles_and_Capabilities&rvsection=12&rvprop=content|timestamp&format=php' );
 
 if ( ! defined( 'ESA_CODEX_PARSE_QUERY' ) )
 	/**
