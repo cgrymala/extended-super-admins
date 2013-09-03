@@ -53,7 +53,7 @@ if ( ! function_exists( 'is_multinetwork' ) ) {
 			return false;
 		
 		global $wpdb;
-		$plugins = $wpdb->get_results( $wpdb->prepare( "SELECT meta_value FROM " . $wpdb->sitemeta . " WHERE meta_key = 'active_sitewide_plugins'" ) );
+		$plugins = $wpdb->get_results( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->sitemeta} WHERE meta_key = %s", 'active_sitewide_plugins' ) );
 		foreach ( $plugins as $plugin ) {
 			if ( array_key_exists( 'wordpress-multi-network/wordpress-multi-network.php', maybe_unserialize( $plugin->meta_value ) ) ) {
 				require_once( WP_PLUGIN_DIR . '/wordpress-multi-network/wordpress-multi-network.php' );
@@ -66,10 +66,10 @@ if ( ! function_exists( 'is_multinetwork' ) ) {
 				return true;
 			}
 		}
-		$sites = $wpdb->get_results( $wpdb->prepare( "SELECT blog_id FROM " . $wpdb->blogs ) );
+		$sites = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}" );
 		foreach ( $sites as $site ) {
 			$oldblog = $wpdb->set_blog_id( $site->blog_id );
-			$plugins = $wpdb->get_results( $wpdb->prepare( "SELECT option_value FROM " . $wpdb->options . " WHERE option_name = 'active_plugins'" ) );
+			$plugins = $wpdb->get_results( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", 'active_plugins' ) );
 			foreach ( $plugins as $plugin ) {
 				if ( array_key_exists( 'wordpress-multi-network/wordpress-multi-network.php', maybe_unserialize( $plugin->option_value ) ) ) {
 					require_once( WP_PLUGIN_DIR . '/wordpress-multi-network/wordpress-multi-network.php' );

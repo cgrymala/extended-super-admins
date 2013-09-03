@@ -111,10 +111,10 @@ if ( class_exists( 'extended_super_admins' ) && ! class_exists( 'wpmn_super_admi
 			$full_network_admins = array();
 			
 			/* Get a list of all networks */
-			$networks = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT id FROM " . $wpdb->site ) );
+			$networks = $wpdb->get_results( "SELECT DISTINCT id FROM " . $wpdb->site );
 			$network_admins = array();
 			$all_super_admins = array();
-			$network_admins = $wpdb->get_results( $wpdb->prepare( "SELECT site_id, meta_value FROM " . $wpdb->sitemeta . " WHERE meta_key = 'site_admins'" ) );
+			$network_admins = $wpdb->get_results( $wpdb->prepare( "SELECT site_id, meta_value FROM {$wpdb->sitemeta} WHERE meta_key = %s", 'site_admins' ) );
 			foreach ( $network_admins as $network ) {
 				$all_super_admins = array_merge( $all_super_admins, maybe_unserialize( $network->meta_value ) );
 				$full_network_admins = array_intersect( $all_super_admins, maybe_unserialize( $network->meta_value ) );
@@ -168,7 +168,7 @@ if ( class_exists( 'extended_super_admins' ) && ! class_exists( 'wpmn_super_admi
 			
 			global $wpdb;
 			$all_super_admins = array();
-			$super_admins = $wpdb->get_results( $wpdb->prepare( "SELECT meta_value FROM " . $wpdb->sitemeta . " WHERE meta_key = 'site_admins'" ) );
+			$super_admins = $wpdb->get_results( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->sitemeta} WHERE meta_key = %s", 'site_admins' ) );
 			foreach ( $super_admins as $site_admins ) {
 				$site_admins = maybe_unserialize( $site_admins->meta_value );
 				$all_super_admins = array_merge( $all_super_admins, $site_admins );
@@ -189,7 +189,7 @@ if ( class_exists( 'extended_super_admins' ) && ! class_exists( 'wpmn_super_admi
 			$this->options = $this->get_options();*/
 			
 			global $wpdb;
-			$networks = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT id FROM " . $wpdb->site ) );
+			$networks = $wpdb->get_results( "SELECT DISTINCT id FROM " . $wpdb->site );
 			$updated = true;
 			foreach ( $networks as $network ) {
 				$this->switch_to_site( $network->id );
@@ -233,7 +233,7 @@ if ( class_exists( 'extended_super_admins' ) && ! class_exists( 'wpmn_super_admi
 		 */
 		function delete_settings() {
 			global $wpdb;
-			$networks = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT id FROM " . $wpdb->site ) );
+			$networks = $wpdb->get_results( "SELECT DISTINCT id FROM " . $wpdb->site );
 			$updated = true;
 			foreach ( $networks as $network ) {
 				$this->switch_to_site( $network->id );
@@ -275,7 +275,7 @@ if ( class_exists( 'extended_super_admins' ) && ! class_exists( 'wpmn_super_admi
 		 */
 		function switch_to_network( $new_site_id ) {
 			global $wpdb;
-			$site_info = $wpdb->get_results( $wpdb->prepare( "SELECT site_id, blog_id FROM $wpdb->blogs GROUP BY site_id" ) );
+			$site_info = $wpdb->get_results( "SELECT site_id, blog_id FROM {$wpdb->blogs} GROUP BY site_id" );
 			if ( empty( $site_info ) )
 				return false;
 			

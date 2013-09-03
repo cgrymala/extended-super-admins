@@ -25,7 +25,7 @@ $wpmn_super_admins_obj = new wpmn_super_admins;
 if( 'multi_network_activate' == $_GET['options-action'] ) {
 	$main_site_id = $wpdb->siteid;
 	
-	$networks = $wpdb->get_results( $wpdb->prepare( 'SELECT DISTINCT id FROM ' . $wpdb->site ) );
+	$networks = $wpdb->get_results( 'SELECT DISTINCT id FROM ' . $wpdb->site );
 	
 	if( count( $networks ) ) {
 		$GLOBALS['esa_options'] = maybe_unserialize( get_site_option( ESA_OPTION_NAME, array(), false ) );
@@ -86,7 +86,7 @@ if( 'multi_network_activate' == $_GET['options-action'] ) {
 		echo '</div>';
 	}
 } elseif( 'multi_network_deactivate' == $_GET['options-action'] ) {
-	$networks = $wpdb->get_results( $wpdb->prepare( 'SELECT DISTINCT id FROM ' . $wpdb->site ) );
+	$networks = $wpdb->get_results( 'SELECT DISTINCT id FROM ' . $wpdb->site );
 	if( count( $networks ) ) {
 		foreach( $networks as $network ) {
 			$wpmn_super_admins_obj->switch_to_site( $network->id );
