@@ -105,13 +105,7 @@ function getCodexCapabilities() {
 	
 	$content_array = array();
 	foreach( $content as $c ) {
-		if ( stristr( $c, '=' ) ) {
-			$c = explode( ' ', $c );
-			$c = array_shift( $c );
-			$idpos = strpos( $c, '"' );
-		} else {
-			$idpos = strpos( $c, '">' );
-		}
+		$idpos = strpos( $c, '"' );
 		$id = substr( $c, 0, $idpos );
 		$c = str_replace( $id . '"> <span class="mw-headline">' . $id . '</span></h3>', '', $c );
 		if( !empty( $id ) )

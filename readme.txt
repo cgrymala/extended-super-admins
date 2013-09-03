@@ -73,7 +73,7 @@ If either of those plugins is active, this plugin will attempt to use and save a
 This plugin creates a new capability called "manage_esa_options". If you do not want a user to be able to modify the settings for this plugin, simply revoke that capability from any users that belong to the modified role(s).
 
 == Screenshots ==
-1. The admin area for this plugin. In this shot, a single role has been defined, and both boxes have been collapsed.
+1. The admin area for this plugin. In this shot, two custom roles have been defined, and all three boxes have been collapsed.
 2. The way the admin area looks while adding a new role.
 3. The way the admin area looks while modifying an existing role. In this shot, an example of the Codex information is being displayed.
 
