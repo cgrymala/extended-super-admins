@@ -85,7 +85,13 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			$esa_options = isset( $GLOBALS['esa_options'] ) ? $GLOBALS['esa_options'] : NULL;
 			$force_update = isset( $GLOBALS['force_esa_options_update'] ) ? $GLOBALS['force_esa_options_update'] : false;
 			$this->set_options( $esa_options, $force_update );
-			add_role( 'esa_plugin_manager', 'Extended Super Admin Manager', array( 'manage_esa_options' ) );
+			$r = get_site_option( '_esa_deleted_deprecated_role', false );
+			if ( false === $r ) {
+				$r = get_role( 'esa_plugin_manager' );
+				if ( ! empty( $r ) && ! is_wp_error( $r ) )
+					remove_role( 'esa_plugin_manager' );
+				update_site_option( '_esa_deleted_deprecated_role', true );
+			}
 			
 			$this->can_manage_plugin();
 			

@@ -90,6 +90,7 @@ This plugin creates a new capability called "manage_esa_options". If you do not 
 * Removed "Activate" and "Deactivate" links from plugins screen if user doesn't have the manage_esa_options capability
 * Cleaned up improper uses of WPDB::prepare()
 * Cleaned up messy SQL calls
+* Removed useless ESA Manager role
 
 = 0.6.1 =
 * Hopefully fixed issue that allowed modified users to edit their own permissions
