@@ -177,8 +177,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				return $this->current_user_can( 'manage_esa_options' );
 			}
 			
-			global $current_user;
-			get_currentuserinfo();
+			$current_user = wp_get_current_user();
 			
 			if( is_admin() && !is_network_admin() ) {
 				$current_user->remove_cap( 'manage_esa_options' );
@@ -205,8 +204,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		 * Override the normal current_user_can() function, since it seems to choke on either network caps or custom caps
 		 */
 		function current_user_can( $cap ) {
-			global $current_user;
-			get_currentuserinfo();
+			$current_user = wp_get_current_user();
 			return array_key_exists( $cap, $current_user->caps ) && $current_user->caps[$cap];
 		}
 		
@@ -419,8 +417,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 				return $caps;
 			}
 			
-			global $current_user;
-			get_currentuserinfo();
+			$current_user = wp_get_current_user();
 			$role_id = NULL;
 			
 			foreach( $this->role_members as $id=>$members ) {
@@ -769,8 +766,7 @@ if( !class_exists( 'extended_super_admins' ) ) {
 			if( !empty( $this->allcaps ) )
 				return $this->allcaps;
 			
-			global $current_user;
-			get_currentuserinfo();
+			$current_user = wp_get_current_user();
 			if( !empty( $current_user->allcaps ) && count( $current_user->allcaps ) > 1 )
 				$this->allcaps = $current_user->allcaps;
 			

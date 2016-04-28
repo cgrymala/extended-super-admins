@@ -60,8 +60,7 @@ if ( class_exists( 'extended_super_admins' ) && ! class_exists( 'wpmn_super_admi
 		}
 		
 		function can_manage_plugin() {
-			global $current_user;
-			get_currentuserinfo();
+			$current_user = wp_get_current_user();
 			
 			if ( $this->perms_checked ) {
 				if ( $this->_use_log )
@@ -72,8 +71,7 @@ if ( class_exists( 'extended_super_admins' ) && ! class_exists( 'wpmn_super_admi
 				return $this->current_user_can( 'manage_esa_options' );
 			}
 			
-			global $current_user;
-			get_currentuserinfo();
+			$current_user = wp_get_current_user();
 			/*$user = new WP_User( $current_user->ID );*/
 			
 			if ( is_admin() && ! is_network_admin() ) {
@@ -150,8 +148,7 @@ if ( class_exists( 'extended_super_admins' ) && ! class_exists( 'wpmn_super_admi
 			if ( empty( $this->multi_network_admins ) )
 				$this->set_multi_network_admins();
 			
-			global $current_user;
-			get_currentuserinfo();
+			$current_user = wp_get_current_user();
 			return in_array( $current_user->user_login, $this->multi_network_admins );
 		}
 		
