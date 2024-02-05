@@ -68,6 +68,12 @@ if( !class_exists( 'extended_super_admins' ) ) {
 		 * Determines whether to send error messages to the log
 		 */
 		protected $_use_log = false;
+		/**
+		 * Determine whether this is a multi-network install or not
+         * @var bool $is_multi_network
+         * @access public
+		 */
+        public bool $is_multi_network=false;
 		
 		/**
 		 * Create our extended_super_admins object
