@@ -18,7 +18,9 @@ if ( class_exists( 'extended_super_admins' ) && ! class_exists( 'wpmn_super_admi
 	 */
 	class wpmn_super_admins extends extended_super_admins {
 		
-		var $multi_network_admins = array();
+		public array $multi_network_admins = array();
+
+		public bool $is_multi_network = false;
 		
 		function __construct() {
 			if ( ! parent::__construct() )
